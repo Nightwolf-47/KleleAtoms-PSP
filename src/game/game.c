@@ -7,10 +7,13 @@
 #include "../utils/rendertext.h"
 
 //PSP RTC tick functions are more accurate on that platform than SDL2 PerformanceCounter
+//PSP_DISABLE_AUTOSTART_PTHREAD means pthread functions won't be linked with the program
 #ifdef __PSP__
 #include <psprtc.h>
 #include <pspdebug.h>
 #include <pspdisplay.h>
+#include <pspmoduleinfo.h>
+PSP_DISABLE_AUTOSTART_PTHREAD();
 #else
 #include <SDL2/SDL_timer.h>
 #endif
