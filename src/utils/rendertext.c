@@ -65,7 +65,6 @@ bool rendertext_init(SDL_Renderer* rend, const char* fontFileName, float height)
     unsigned char* fontData = SDL_LoadFile(fontFileName,&fontDataSize);
     if(fontData)
     {
-        stbtt_fontinfo font;
         stbtt_pack_context pack;
         unsigned char* fontPixels = calloc(FONT_PIXEL_ARRAY_SIZE*FONT_PIXEL_ARRAY_SIZE,sizeof(unsigned char));
         if(!fontPixels)
@@ -75,7 +74,6 @@ bool rendertext_init(SDL_Renderer* rend, const char* fontFileName, float height)
             return false;
         }
         
-        stbtt_InitFont(&font, fontData, 0);
         stbtt_PackBegin(&pack, fontPixels, FONT_PIXEL_ARRAY_SIZE, FONT_PIXEL_ARRAY_SIZE, 0, 1, NULL);
         stbtt_PackSetOversampling(&pack, FONT_OVERSAMPLING, FONT_OVERSAMPLING);
         if(!stbtt_PackFontRange(&pack, fontData, 0, STBTT_POINT_SIZE(height), 1, CHAR_AMOUNT-1, packedChars))
