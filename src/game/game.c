@@ -143,7 +143,7 @@ bool game_init(void)
     getCurrentDate(datetime,64);
     SDL_Log("[%s] Started the game.",datetime);
 
-    gameWindow = SDL_CreateWindow("test",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,SCREEN_WIDTH,SCREEN_HEIGHT,0);
+    gameWindow = SDL_CreateWindow("KleleAtoms",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,SCREEN_WIDTH,SCREEN_HEIGHT,0);
     if(!gameWindow)
     {
         game_errorMsg("Couldn't initialize SDL Window: %s", SDL_GetError());
