@@ -18,10 +18,8 @@ typedef struct PakFile {
 static uint32_t readInt32(FILE* stream)
 {
     uint32_t result;
-    char bytes[sizeof(uint32_t)];
-    if(fread(bytes, 1, sizeof(uint32_t), stream) != sizeof(uint32_t))
+    if(fread(&result, 1, sizeof(uint32_t), stream) != sizeof(uint32_t))
         return UINT32_MAX;
-    memcpy(&result, bytes, sizeof(uint32_t));
     return result;
 }
 
@@ -56,7 +54,7 @@ static bool parsePakFile(PakFile* file, FILE* stream)
     }
     uint32_t dirOffset = readInt32(stream);
     uint32_t dirSize = readInt32(stream);
-    if(dirOffset+dirSize > fileSize)
+    if(dirOffset==UINT32_MAX || dirSize==UINT32_MAX || dirOffset+dirSize > fileSize)
     {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR,"PAK_OpenFile: directory offset + size > filesize (%u+%u > %u)",dirOffset,dirSize,fileSize);
         return false;
