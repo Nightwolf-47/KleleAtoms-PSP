@@ -29,6 +29,7 @@ If a player loses all their atoms, they lose. The last standing player wins the 
 ## Credits
 - **PSPDEV Organization** - PSPSDK used for the development of this game.
 - **DrPetter** - SFXR, a tool used to make sounds for KleleAtoms.
+- **greffmaster** - Beta testing + PSVita testing.
 
 ## Build instructions
 1. [Install the PSPSDK](https://pspdev.github.io/installation.html). The required libraries should be bundled with the SDK.
