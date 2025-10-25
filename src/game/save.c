@@ -125,7 +125,7 @@ int loadGame(void)
     if(!logicData)
     {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR,"loadGame: Tried to load game before game init!");
-        return -1;
+        return -2;
     }
 
     SDL_RWops* file = SDL_RWFromFile(saveFilePath,"rb");
@@ -137,7 +137,7 @@ int loadGame(void)
         {
             SDL_LogError(SDL_LOG_CATEGORY_ERROR,"loadGame: Save file is not valid! (File size lower than header size)");
             closeLoadedSaveFile(file);
-            return -1;
+            return -2;
         }
         //Verify magic number "KSF"
         char magicNum[4] = {'\0'}; //Loaded KSF Magic number
@@ -146,7 +146,7 @@ int loadGame(void)
         {
             SDL_LogError(SDL_LOG_CATEGORY_ERROR,"loadGame: Save file is not valid! ('%s' != 'KSF')",magicNum);
             closeLoadedSaveFile(file);
-            return -1;
+            return -2;
         }
         //Parse Header
         int gridWidth = SDL_ReadU8(file); // Loaded grid width
@@ -156,7 +156,7 @@ int loadGame(void)
         {
             SDL_LogError(SDL_LOG_CATEGORY_ERROR,"loadGame: Save file is not valid! (File size not big enough to fit all data)");
             closeLoadedSaveFile(file);
-            return -1;
+            return -2;
         }
         //Parse the rest of header if last check succeeded
         logicData->gridWidth = gridWidth;
@@ -178,6 +178,8 @@ int loadGame(void)
             {
                 int player = SDL_ReadU8(file) - 1;
                 Uint8 atomCount = SDL_ReadU8(file);
+                if(player > 3) //Remove tile data with invalid player number
+                    atomCount = 0;
                 gamelogic_setAtoms(x,y,player,atomCount);
                 logicData->critGrid[x][y] = 4;
                 if(x == 0 || x == gridWidth-1)
