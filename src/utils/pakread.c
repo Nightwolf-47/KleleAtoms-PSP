@@ -3,7 +3,7 @@
 #include <SDL2/SDL.h>
 
 typedef struct PakEntry {
-    char name[57]; //Entry name, there's one more character to make sure it's NULL-terminated
+    char name[56];
     int32_t offset;
     int32_t size;
 } PakEntry;
@@ -44,6 +44,11 @@ static bool parsePakFile(PakFile* file, FILE* stream)
     file->stream = stream;
 
     size_t fileSize = getFileSize(stream);
+    if(fileSize < 12)
+    {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"PAK_OpenFile: File size is not big enough to contain the PAK header (%u < 12)",fileSize);
+        return false;
+    }
     fseek(stream, 0, SEEK_SET);
     char magicStr[5] = {'\0'};
     fread(magicStr, sizeof(char), 4, stream);
@@ -54,7 +59,7 @@ static bool parsePakFile(PakFile* file, FILE* stream)
     }
     uint32_t dirOffset = readInt32(stream);
     uint32_t dirSize = readInt32(stream);
-    if(dirOffset==UINT32_MAX || dirSize==UINT32_MAX || dirOffset+dirSize > fileSize)
+    if(dirOffset==UINT32_MAX || dirSize==UINT32_MAX || (uint64_t)dirOffset+dirSize > fileSize)
     {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR,"PAK_OpenFile: directory offset + size > filesize (%u+%u > %u)",dirOffset,dirSize,fileSize);
         return false;
@@ -71,9 +76,10 @@ static bool parsePakFile(PakFile* file, FILE* stream)
     for(uint32_t i=0; i<entryCount; i++)
     {
         size_t read = fread(file->entries[i].name,sizeof(char),56,stream);
+        file->entries[i].name[55] = '\0';  //The name string has to be NULL terminated
         uint32_t offset = readInt32(stream);
         uint32_t size = readInt32(stream);
-        if(offset+size > fileSize)
+        if((uint64_t)offset+size > fileSize)
         {
             SDL_LogError(SDL_LOG_CATEGORY_ERROR,"PAK_OpenFile: offset + size > fileSize (%u+%u > %u)",offset,size,fileSize);
             return false;
@@ -143,7 +149,7 @@ PakEntryData PAK_LoadEntry(PakFile* file, const char* entryPath)
     if(!file || !entry || entry->size < 0 || !file->stream)
         return (PakEntryData){.size = -1, .data = NULL};
 
-    void* data = malloc(entry->size*sizeof(char));
+    void* data = malloc(SDL_max(entry->size,1)*sizeof(char));
     if(!data)
         return (PakEntryData){.size = -1, .data = NULL};
     fseek(file->stream, entry->offset, SEEK_SET);
