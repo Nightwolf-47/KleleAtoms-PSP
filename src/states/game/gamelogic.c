@@ -323,7 +323,7 @@ void gamelogic_tick(float dt)
 {
     if(logicData->explosionCount >= ATOMSTACKSIZE)
     {
-        game_printMsg("More than "__XSTRING(ATOMSTACKSIZE)" simultaneous explosions! Stopping...",4);
+        game_printMsg("More than "XSTR(ATOMSTACKSIZE)" simultaneous explosions! Stopping...",4);
         changeState(ST_MENUSTATE);
         return;
     }

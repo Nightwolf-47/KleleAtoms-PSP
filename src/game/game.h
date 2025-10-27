@@ -3,12 +3,12 @@
 #include <stdbool.h>
 #include "../utils/pspwav.h"
 
-#ifndef __STRING
-#define __STRING(s) #s
+#ifndef STR
+#define STR(s) #s
 #endif
 
-#ifndef __XSTRING
-#define __XSTRING(s) __STRING(s)
+#ifndef XSTR
+#define XSTR(s) STR(s)
 #endif
 
 extern SDL_Renderer* gameRenderer;

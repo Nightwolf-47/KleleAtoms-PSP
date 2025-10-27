@@ -249,7 +249,7 @@ static MenuUIButton buttons[BUTTON_COUNT] = {
         .clickCallback = &gridSizeCallback,
         .rect = normalButtonRect,
         .buttonVal = 0,
-        .description = "Set grid width. ("__XSTRING(MIN_GRIDWIDTH)"-"__XSTRING(MAX_GRIDWIDTH)")"
+        .description = "Set grid width. ("XSTR(MIN_GRIDWIDTH)"-"XSTR(MAX_GRIDWIDTH)")"
     },
     {
         .drawElements = {{MDE_IMAGE,0,defaultColor,{0},{0,0},NULL},{MDE_TEXT,60,blackColor,{0},{0,0},NULL}},
@@ -257,7 +257,7 @@ static MenuUIButton buttons[BUTTON_COUNT] = {
         .clickCallback = &gridSizeCallback,
         .rect = normalButtonRect,
         .buttonVal = 1,
-        .description = "Set grid height. ("__XSTRING(MIN_GRIDHEIGHT)"-"__XSTRING(MAX_GRIDHEIGHT)")"
+        .description = "Set grid height. ("XSTR(MIN_GRIDHEIGHT)"-"XSTR(MAX_GRIDHEIGHT)")"
     },
     {
         .drawElements = {{MDE_IMAGE,0,defaultColor,{0},{0,0},NULL},{MDE_IMAGE,0,defaultColor,{0},{0,0},NULL}},
