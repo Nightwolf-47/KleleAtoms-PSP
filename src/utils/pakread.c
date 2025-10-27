@@ -39,6 +39,7 @@ static bool parsePakFile(PakFile* file, FILE* stream)
     if(!file)
     {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR,"PAK_OpenFile: Couldn't allocate the PakFile struct.");
+        fclose(stream);
         return false;
     }
     file->stream = stream;
@@ -103,7 +104,7 @@ PakFile* PAK_OpenFile(const char* fileName)
         else
         {
             SDL_LogError(SDL_LOG_CATEGORY_ERROR,"PAK_OpenFile: Couldn't parse the PAK file %s", fileName);
-            fclose(fileStream);
+            PAK_CloseFile(file);
             return NULL;
         }
     }
@@ -122,6 +123,7 @@ void PAK_CloseFile(PakFile* file)
         file->stream = NULL;
         free(file->entries);
         file->entries = NULL;
+        free(file);
     }
 }
 

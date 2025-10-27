@@ -5,6 +5,7 @@
 #include "assetman.h"
 #include "../utils/timer.h"
 #include "../utils/rendertext.h"
+#include <time.h>
 
 //PSP RTC tick functions are more accurate on that platform than SDL2 PerformanceCounter
 //PSP_DISABLE_AUTOSTART_PTHREAD means pthread functions won't be linked with the program

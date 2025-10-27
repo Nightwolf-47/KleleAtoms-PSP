@@ -56,10 +56,10 @@ typedef struct MenuDrawElement {
 } MenuDrawElement;
 
 static const SDL_Color backgroundColor = {0x80,0x80,0x80,SDL_ALPHA_OPAQUE};
-static SDL_Color outlineColor = {0xFF,0xFF,0xFF,SDL_ALPHA_OPAQUE};
-static SDL_Color outlineColorSelect = {0xFF,0xBF,0x00,SDL_ALPHA_OPAQUE};
-static SDL_Color backgroundColorSelect = {0x70,0x70,0x70,SDL_ALPHA_OPAQUE};
-static SDL_Color backgroundColorPress = {0x58,0x58,0x58,SDL_ALPHA_OPAQUE};
+static const SDL_Color outlineColor = {0xFF,0xFF,0xFF,SDL_ALPHA_OPAQUE};
+static const SDL_Color outlineColorSelect = {0xFF,0xBF,0x00,SDL_ALPHA_OPAQUE};
+static const SDL_Color backgroundColorSelect = {0x70,0x70,0x70,SDL_ALPHA_OPAQUE};
+static const SDL_Color backgroundColorPress = {0x58,0x58,0x58,SDL_ALPHA_OPAQUE};
 
 struct MenuUIButton {
     MenuDrawElement drawElements[2];
