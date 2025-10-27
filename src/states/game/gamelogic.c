@@ -5,11 +5,6 @@
 #include "gameai.h"
 #include <SDL2/SDL.h>
 
-#ifndef __XSTRING
-#define __STRING(s) #s
-#define __XSTRING(s) __STRING(s)
-#endif
-
 // Base atom speed in pixels per second
 const static float baseAtomSpeed = 42.27f;
 

@@ -3,6 +3,14 @@
 #include <stdbool.h>
 #include "../utils/pspwav.h"
 
+#ifndef __STRING
+#define __STRING(s) #s
+#endif
+
+#ifndef __XSTRING
+#define __XSTRING(s) __STRING(s)
+#endif
+
 extern SDL_Renderer* gameRenderer;
 
 extern PSPWav* sfxExplode; //Explode sound
