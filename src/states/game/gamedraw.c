@@ -93,6 +93,7 @@ void gamedraw_drawGrid(void)
 
 void gamedraw_drawAtoms(void)
 {
+    SDL_Rect explodeRect = {-1,-1,11,11};
     for(int x=0; x<logicData->gridWidth; x++)
     {
         for(int y=0; y<logicData->gridHeight; y++)
@@ -102,8 +103,8 @@ void gamedraw_drawAtoms(void)
             int basey = gridStartY+(y*TILESIZE);
             if(curTile->explodeTime > 0)
             {
-                SDL_Rect explodeRect = {10+basex,10+basey,11,11};
-                SDL_RenderCopy(gameRenderer, texExplode, NULL, &explodeRect);
+                explodeRect.x = 10+basex;
+                explodeRect.y = 10+basey;
             }
             else if(curTile->playerNum >= 0)
             {
@@ -119,6 +120,8 @@ void gamedraw_drawAtoms(void)
             }
         }
     }
+    if(explodeRect.x >= 0)
+        SDL_RenderCopy(gameRenderer, texExplode, NULL, &explodeRect);
 }
 
 void gamedraw_drawHUD(Sint32 gameTime)
