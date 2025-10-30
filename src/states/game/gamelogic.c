@@ -4,6 +4,7 @@
 #include "../../utils/pspwav.h"
 #include "gameai.h"
 #include <SDL2/SDL.h>
+#include <limits.h>
 
 // Base atom speed in pixels per second
 const static float baseAtomSpeed = 42.27f;
