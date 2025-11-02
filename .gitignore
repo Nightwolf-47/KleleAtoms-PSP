@@ -57,3 +57,5 @@ dkms.conf
 # Additional stuff
 build/
 .vscode/
+build-win32/
+build-linux/

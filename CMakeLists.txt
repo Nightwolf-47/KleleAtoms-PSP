@@ -31,11 +31,16 @@ pkg_search_module(SDL2_IMAGE REQUIRED SDL2_image)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
 
+if(PSP)
+set(ADDITIONAL_LIBS "pspdebug" "pspdisplay")
+else()
+set(ADDITIONAL_LIBS "m")
+endif()
+
 target_link_libraries(${PROJECT_NAME} PRIVATE
     ${SDL2_LIBRARIES}
     ${SDL2_IMAGE_LIBRARIES}
-    pspdebug
-    pspdisplay
+    ${ADDITIONAL_LIBS}
 )
 
 if(PSP)
