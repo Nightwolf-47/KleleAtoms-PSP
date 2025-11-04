@@ -24,5 +24,12 @@ SDL_Texture* assetman_loadTexture(SDL_Renderer* renderer, const char* assetPath)
 /// @return Sound data for use in pspwav on success, NULL on failure
 PSPWav* assetman_loadWav(const char* assetPath);
 
+/// @brief Load a font from loaded PAK file and initialize text drawer with it
+/// @param renderer SDL renderer used by text drawer
+/// @param assetPath TTF font path inside the PAK file
+/// @param height Font height in pixels
+/// @return true on success, false on failure
+bool assetman_initFont(SDL_Renderer* renderer, const char* assetPath, float height);
+
 // Closes the PAK file and stops the asset manager
 void assetman_stop(void);

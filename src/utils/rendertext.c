@@ -54,15 +54,13 @@ static SDL_Texture* createTextureFont(SDL_Renderer* rend, unsigned char* fontPix
     }
 }
 
-bool rendertext_init(SDL_Renderer* rend, const char* fontFileName, float height)
+bool rendertext_init_memory(SDL_Renderer* rend, unsigned const char* fontData, size_t fontDataSize, float height)
 {
     if(fontAtlas)
         rendertext_stop();
 
     textAlign = TEXT_ALIGN_LEFT;
     drawWidth = getWindowWidth(rend);
-    size_t fontDataSize;
-    unsigned char* fontData = SDL_LoadFile(fontFileName,&fontDataSize);
     if(fontData)
     {
         stbtt_pack_context pack;
@@ -70,7 +68,6 @@ bool rendertext_init(SDL_Renderer* rend, const char* fontFileName, float height)
         if(!fontPixels)
         {
             SDL_LogError(SDL_LOG_CATEGORY_ERROR, "rendertext_init: Couldn't allocate font pixel data");
-            SDL_free(fontData);
             return false;
         }
         
@@ -79,7 +76,6 @@ bool rendertext_init(SDL_Renderer* rend, const char* fontFileName, float height)
         if(!stbtt_PackFontRange(&pack, fontData, 0, STBTT_POINT_SIZE(height), 1, CHAR_AMOUNT-1, packedChars))
         {
             SDL_LogError(SDL_LOG_CATEGORY_ERROR, "rendertext_init: FONT_PIXEL_ARRAY_SIZE is too small for the given font size + oversampling settings");
-            SDL_free(fontData);
             free(fontPixels);
             stbtt_PackEnd(&pack);
             return false;
@@ -87,7 +83,6 @@ bool rendertext_init(SDL_Renderer* rend, const char* fontFileName, float height)
         stbtt_PackEnd(&pack);
 
         fontAtlas = createTextureFont(rend,fontPixels);
-        SDL_free(fontData);
         free(fontPixels);
         if(!fontAtlas)
             return false;
@@ -100,6 +95,15 @@ bool rendertext_init(SDL_Renderer* rend, const char* fontFileName, float height)
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "rendertext_init: Couldn't load the font!");
         return false;
     }
+}
+
+bool rendertext_init(SDL_Renderer* rend, const char* fontFileName, float height)
+{
+    size_t fontDataSize;
+    unsigned char* fontData = SDL_LoadFile(fontFileName,&fontDataSize);
+    bool initSuccess = rendertext_init_memory(rend, fontData, fontDataSize, height);
+    SDL_free(fontData);
+    return initSuccess;
 }
 
 /// @brief Get a width of a text line
