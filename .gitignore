@@ -59,3 +59,4 @@ build/
 .vscode/
 build-win32/
 build-linux/
+__pycache__
