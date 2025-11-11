@@ -23,12 +23,9 @@ extern GameState* currentState;
 void loadStates(void);
 
 /// @brief Change game state instantly
-/// @param newState GameStateId enum for the new state or -1 to close the game instantly
+/// @param newState GameStateId enum for the new state
 void changeStateInstant(enum GameStateId newStateId);
 
 /// @brief Change game state with a fade transition
-/// @param newState GameStateId enum for the new state or -1 to close the game instantly
+/// @param newState GameStateId enum for the new state
 void changeState(enum GameStateId newState);
-
-// Closes the game, macro for changeStateInstant(-1)
-#define closeGame() changeStateInstant(-1)
