@@ -166,15 +166,15 @@ bool game_init(void)
         return false;
     }
 
-    if(!assetman_init("res/resources.pak"))
+    if(!assetman_init("resources.pak"))
     {
-        game_errorMsg("Couldn't load PAK asset file res/resources.pak");
+        game_errorMsg("Couldn't load PAK asset file resources.pak");
         return false;
     }
 
-    if(!rendertext_init(gameRenderer,"res/font/DejaVuSans.ttf",14))
+    if(!assetman_initFont(gameRenderer,"font/DejaVuSans.ttf",14))
     {
-        game_errorMsg("Couldn't initialize font res/font/DejaVuSans.ttf");
+        game_errorMsg("Couldn't initialize font resources.pk3/font/DejaVuSans.ttf");
         return false;
     }
 
