@@ -135,7 +135,7 @@ static PakEntry* getPackEntry(PakFile *file, const char *entryPath)
 {
     if(file && file->entries && entryPath)
     {
-        for(int32_t i=0; i<file->entryCount; i++)
+        for(uint32_t i=0; i<file->entryCount; i++)
         {
             if(strcmp(file->entries[i].name,entryPath) == 0)
                 return &file->entries[i];
@@ -146,14 +146,17 @@ static PakEntry* getPackEntry(PakFile *file, const char *entryPath)
 
 PakEntryData PAK_LoadEntry(PakFile* file, const char* entryPath)
 {
+    if(!file || !file->stream)
+        return (PakEntryData){.size = 0, .data = NULL};
+
     PakEntry* entry = getPackEntry(file,entryPath);
 
-    if(!file || !entry || entry->size < 0 || !file->stream)
-        return (PakEntryData){.size = -1, .data = NULL};
+    if(!entry || entry->size > INT32_MAX || entry->offset > INT32_MAX)
+        return (PakEntryData){.size = 0, .data = NULL};
 
     void* data = malloc(SDL_max(entry->size,1)*sizeof(char));
     if(!data)
-        return (PakEntryData){.size = -1, .data = NULL};
+        return (PakEntryData){.size = 0, .data = NULL};
     fseek(file->stream, entry->offset, SEEK_SET);
     fread(data, entry->size, 1, file->stream);
     return (PakEntryData){.size = entry->size, .data = data};
