@@ -31,7 +31,7 @@ static int getWindowWidth(SDL_Renderer* rend)
 /// @return Font atlas texture on success, NULL on failure
 static SDL_Texture* createTextureFont(SDL_Renderer* rend, unsigned char* fontPixels)
 {
-    SDL_Surface* fontSurface = SDL_CreateRGBSurfaceWithFormat(0,FONT_PIXEL_ARRAY_SIZE,FONT_PIXEL_ARRAY_SIZE,32,SDL_PIXELFORMAT_ABGR8888);
+    SDL_Surface* fontSurface = SDL_CreateRGBSurfaceWithFormat(0,FONT_PIXEL_ARRAY_SIZE,FONT_PIXEL_ARRAY_SIZE,32,SDL_PIXELFORMAT_RGBA32);
     if(fontSurface)
     {
         SDL_LockSurface(fontSurface);
