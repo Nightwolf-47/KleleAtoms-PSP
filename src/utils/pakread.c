@@ -4,13 +4,13 @@
 
 typedef struct PakEntry {
     char name[56];
-    int32_t offset;
-    int32_t size;
+    uint32_t offset;
+    uint32_t size;
 } PakEntry;
 
 typedef struct PakFile {
     PakEntry* entries;
-    int32_t entryCount;
+    uint32_t entryCount;
     FILE* stream;
 } PakFile;
 
