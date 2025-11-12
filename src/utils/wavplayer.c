@@ -20,7 +20,7 @@ static bool parseDataChunk(SDL_RWops* wav, WavInfo* audioData, const char* fileN
 {
     if(dataSize > 131072)
     {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"pspwav: Audio sizes > 128 KB not supported ('%s')",fileName);
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"wavplayer: Audio sizes > 128 KB not supported ('%s')",fileName);
         return false;
     }
 
@@ -29,7 +29,7 @@ static bool parseDataChunk(SDL_RWops* wav, WavInfo* audioData, const char* fileN
     size_t readSize = SDL_RWread(wav,audioData->pcmData,1,dataSize);
     if(readSize != dataSize)
     {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"pspwav: Wav file '%s': could not read all data",fileName);
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"wavplayer: Wav file '%s': could not read all data",fileName);
         return false;
     }
     audioData->pcmSize = trueDataSize;
@@ -42,13 +42,13 @@ static bool parseFormatChunk(SDL_RWops* wav, WavInfo* audioData, const char* fil
     Uint16 audioFormat = SDL_ReadLE16(wav);
     if(audioFormat != 1)
     {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"pspwav: Wav file '%s': unsupported audio format %d",fileName,audioFormat);
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"wavplayer: Wav file '%s': unsupported audio format %d",fileName,audioFormat);
         return false;
     }
     audioData->channelCount = SDL_ReadLE16(wav);
     if(audioData->channelCount == 0 || audioData->channelCount > 2)
     {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"pspwav: Wav file '%s': unsupported channel count %d",fileName,audioData->channelCount);
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"wavplayer: Wav file '%s': unsupported channel count %d",fileName,audioData->channelCount);
         return false;
     }
     audioData->sampleRate = SDL_ReadLE32(wav);
@@ -71,7 +71,7 @@ static WavInfo* parseWavFile(SDL_RWops* wav, size_t wavSize, const char* fileNam
     SDL_RWread(wav,idstr,sizeof(char),4);
     if(strcmp(idstr,"RIFF") != 0)
     {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"pspwav: Wav file '%s' is invalid or corrupted",fileName);
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"wavplayer: Wav file '%s' is invalid or corrupted",fileName);
         wavplayer_destroy(audioData);
         return NULL;
     }
@@ -79,7 +79,7 @@ static WavInfo* parseWavFile(SDL_RWops* wav, size_t wavSize, const char* fileNam
     Uint32 trueFileSize = SDL_ReadLE32(wav) + 8;
     if(trueFileSize < wavSize)
     {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"pspwav: Wav file '%s' is too small",fileName);
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"wavplayer: Wav file '%s' is too small",fileName);
         wavplayer_destroy(audioData);
         return NULL;
     }
@@ -87,7 +87,7 @@ static WavInfo* parseWavFile(SDL_RWops* wav, size_t wavSize, const char* fileNam
     SDL_RWread(wav,idstr,sizeof(char),4);
     if(strcmp(idstr,"WAVE") != 0)
     {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"pspwav: Wav file '%s' is not a valid wav file",fileName);
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"wavplayer: Wav file '%s' is not a valid wav file",fileName);
         wavplayer_destroy(audioData);
         return NULL;
     }
@@ -102,7 +102,7 @@ static WavInfo* parseWavFile(SDL_RWops* wav, size_t wavSize, const char* fileNam
         {
             if(chunkSize != 16)
             {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR,"pspwav: Wav Data format chunk size is invalid in file %s (%d)",fileName,chunkSize);
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR,"wavplayer: Wav Data format chunk size is invalid in file %s (%d)",fileName,chunkSize);
                 wavplayer_destroy(audioData);
                 return NULL;
             }
@@ -112,7 +112,7 @@ static WavInfo* parseWavFile(SDL_RWops* wav, size_t wavSize, const char* fileNam
         {
             if((SDL_RWtell(wav) + chunkSize) > wavSize)
             {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR,"pspwav: Wav Data extends beyond the file size in file %s",fileName);
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR,"wavplayer: Wav Data extends beyond the file size in file %s",fileName);
                 wavplayer_destroy(audioData);
                 return NULL;
             }
@@ -125,20 +125,20 @@ static WavInfo* parseWavFile(SDL_RWops* wav, size_t wavSize, const char* fileNam
     }
     if(!formatParsed)
     {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"pspwav: Wav Data format not parsed in file %s",fileName);
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"wavplayer: Wav Data format not parsed in file %s",fileName);
         wavplayer_destroy(audioData);
         return NULL;
     }
     if(!dataParsed)
     {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"pspwav: Wav Data not parsed in file %s",fileName);
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"wavplayer: Wav Data not parsed in file %s",fileName);
         wavplayer_destroy(audioData);
         return NULL;
     }
     return audioData;
 }
 
-/// @brief Loads a WAV file from memory (internal function used by both pspwav_load functions)
+/// @brief Loads a WAV file from memory (internal function used by both wavplayer_load functions)
 /// @param wavData Memory buffer containing WAV file data
 /// @param wavSize Size of WAV data buffer
 /// @param wavName WAV file name, used for error log messages
@@ -147,7 +147,7 @@ static WavInfo* loadWavData(void* wavData, size_t wavSize, const char* fileName)
 {
     if(wavSize < 44)
     {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"pspwav: Wav file '%s' is too small",fileName);
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"wavplayer: Wav file '%s' is too small",fileName);
         return NULL;
     }
 
@@ -164,7 +164,7 @@ static WavInfo* loadWavData(void* wavData, size_t wavSize, const char* fileName)
             audioData->pspChannel = sceAudioChReserve(PSP_AUDIO_NEXT_CHANNEL, PSP_AUDIO_SAMPLE_ALIGN(audioData->pcmSize/2), (audioData->channelCount == 2) ? PSP_AUDIO_FORMAT_STEREO : PSP_AUDIO_FORMAT_MONO);
             if(audioData->pspChannel < 0)
             {
-                SDL_LogError(SDL_LOG_CATEGORY_ERROR,"pspwav: Failure to initialize wav channel for '%s' (error code %d)",fileName,audioData->pspChannel);
+                SDL_LogError(SDL_LOG_CATEGORY_ERROR,"wavplayer: Failure to initialize wav channel for '%s' (error code %d)",fileName,audioData->pspChannel);
                 wavplayer_destroy(audioData);
                 return NULL;
             }
@@ -173,13 +173,13 @@ static WavInfo* loadWavData(void* wavData, size_t wavSize, const char* fileName)
         }
         else
         {
-            SDL_LogError(SDL_LOG_CATEGORY_ERROR,"pspwav: Could not parse loaded wav file '%s'",fileName);
+            SDL_LogError(SDL_LOG_CATEGORY_ERROR,"wavplayer: Could not parse loaded wav file '%s'",fileName);
             return NULL;
         }
     }
     else
     {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"pspwav: Could not load wav file '%s'",fileName);
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"wavplayer: Could not load wav file '%s'",fileName);
         return NULL;
     }
 }
