@@ -24,7 +24,7 @@ If a player loses all their atoms, they lose. The last standing player wins the 
 ## Third-party libraries used
 - [SDL2](https://github.com/libsdl-org/SDL/tree/SDL2) (License: [Zlib](https://github.com/libsdl-org/SDL/blob/SDL2/LICENSE.txt))
 - [SDL2_image](https://github.com/libsdl-org/SDL_image/tree/SDL2) (License: [Zlib](https://github.com/libsdl-org/SDL_image/blob/SDL2/LICENSE.txt))
-- [stb_truetype](https://github.com/nothings/stb/blob/master/stb_truetype.h) + [stb_rect_pack](https://github.com/nothings/stb/blob/master/stb_rect_pack.h) (License: [Unlicense/MIT](https://github.com/nothings/stb/blob/master/LICENSE))  
+- [stb_truetype](https://github.com/nothings/stb/blob/master/stb_truetype.h) + [stb_rect_pack](https://github.com/nothings/stb/blob/master/stb_rect_pack.h) (License: [Unlicense/MIT](https://github.com/nothings/stb/blob/master/LICENSE)) - located in src/utils/stb  
 
 ## Credits
 - **PSPDEV Organization** - PSPSDK used for the development of this game.
@@ -48,3 +48,5 @@ If a player loses all their atoms, they lose. The last standing player wins the 
 This game is licensed under the MIT License, see [LICENSE](https://github.com/Nightwolf-47/KleleAtoms-PSP/blob/main/LICENSE) for details.  
   
 The font res/font/DejaVuSans.ttf is licensed under its own license present in the [res/font/LICENSE](https://github.com/Nightwolf-47/KleleAtoms-PSP/blob/main/res/font/LICENSE) file.
+
+The headers in src/utils/stb folder are [stb libraries](https://github.com/nothings/stb), licensed under either [Unlicense or MIT license](https://github.com/nothings/stb/blob/master/LICENSE).

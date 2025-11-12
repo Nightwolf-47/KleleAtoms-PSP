@@ -3,8 +3,8 @@
 #define STB_TRUETYPE_IMPLEMENTATION
 #define STB_RECT_PACK_IMPLEMENTATION
 #define STBTT_STATIC
-#include <stb_rect_pack.h>
-#include <stb_truetype.h>
+#include "stb/stb_rect_pack.h"
+#include "stb/stb_truetype.h"
 
 #define CHAR_AMOUNT 128
 #define SCREEN_WIDTH 480

@@ -131,6 +131,20 @@ static void destroySounds(void)
     sfxClick = sfxPut = sfxExplode = NULL;
 }
 
+static int getBestWindowScale(void)
+{
+    #ifdef __PSP__
+    return 1;
+    #else
+    SDL_DisplayMode mode;
+    if(SDL_GetCurrentDisplayMode(0,&mode) != 0)
+        return 2;
+    int xscale = mode.w / SCREEN_WIDTH / 2;
+    int yscale = mode.h / SCREEN_HEIGHT / 2;
+    return SDL_max(SDL_min(xscale,yscale),1);
+    #endif
+}
+
 bool game_init(void)
 {
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
@@ -144,7 +158,9 @@ bool game_init(void)
     getCurrentDate(datetime,64);
     SDL_Log("[%s] Started the game.",datetime);
 
-    gameWindow = SDL_CreateWindow("KleleAtoms",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,SCREEN_WIDTH,SCREEN_HEIGHT,0);
+    int windowScale = getBestWindowScale();
+
+    gameWindow = SDL_CreateWindow("KleleAtoms",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,SCREEN_WIDTH*windowScale,SCREEN_HEIGHT*windowScale,0);
     if(!gameWindow)
     {
         game_errorMsg("Couldn't initialize SDL Window: %s", SDL_GetError());
@@ -157,6 +173,11 @@ bool game_init(void)
         game_errorMsg("Couldn't initialize SDL Renderer: %s", SDL_GetError());
         return false;
     }
+
+    #ifndef __PSP__
+    SDL_RenderSetIntegerScale(gameRenderer, SDL_TRUE);
+    SDL_RenderSetLogicalSize(gameRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
+    #endif
 
     SDL_SetRenderDrawBlendMode(gameRenderer,SDL_BLENDMODE_BLEND);
 
