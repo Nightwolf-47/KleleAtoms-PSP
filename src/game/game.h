@@ -1,7 +1,7 @@
 #pragma once
 #include <SDL2/SDL.h>
 #include <stdbool.h>
-#include "../utils/pspwav.h"
+#include "../utils/wavplayer.h"
 
 #ifndef STR
 #define STR(s) #s
@@ -13,9 +13,9 @@
 
 extern SDL_Renderer* gameRenderer;
 
-extern PSPWav* sfxExplode; //Explode sound
-extern PSPWav* sfxPut; //Atom put sound
-extern PSPWav* sfxClick; //Menu button click sound
+extern WavInfo* sfxExplode; //Explode sound
+extern WavInfo* sfxPut; //Atom put sound
+extern WavInfo* sfxClick; //Menu button click sound
 
 //PSP Screen width, has to be 480
 #define SCREEN_WIDTH 480

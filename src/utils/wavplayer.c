@@ -1,11 +1,11 @@
-#include "pspwav.h"
+#include "wavplayer.h"
 #include <SDL2/SDL.h>
 
 #ifdef __PSP__
 #include <pspaudio.h>
 #endif
 
-struct PSPWav 
+struct WavInfo 
 {
     Uint16 channelCount;
     Uint32 sampleRate;
@@ -16,7 +16,7 @@ struct PSPWav
 };
 
 // Parses the data chunk, extracts PCM data and aligns the PCM sample count to meet the PSP sample count requirements, returns true on success
-static bool parseDataChunk(SDL_RWops* wav, PSPWav* audioData, const char* fileName, Uint32 dataSize)
+static bool parseDataChunk(SDL_RWops* wav, WavInfo* audioData, const char* fileName, Uint32 dataSize)
 {
     if(dataSize > 131072)
     {
@@ -37,7 +37,7 @@ static bool parseDataChunk(SDL_RWops* wav, PSPWav* audioData, const char* fileNa
 }
 
 // Parses the format chunk, returns true if parsing was successful
-static bool parseFormatChunk(SDL_RWops* wav, PSPWav* audioData, const char* fileName)
+static bool parseFormatChunk(SDL_RWops* wav, WavInfo* audioData, const char* fileName)
 {
     Uint16 audioFormat = SDL_ReadLE16(wav);
     if(audioFormat != 1)
@@ -61,10 +61,10 @@ static bool parseFormatChunk(SDL_RWops* wav, PSPWav* audioData, const char* file
 /// @param wav WAV file data IO stream
 /// @param wavSize WAV file data size
 /// @param fileName WAV file name, used for error log messages
-/// @return PSPWav audio data struct for use in pspwav_play (or NULL on failure)
-static PSPWav* parseWavFile(SDL_RWops* wav, size_t wavSize, const char* fileName)
+/// @return WavInfo audio data struct for use in wavplayer_play (or NULL on failure)
+static WavInfo* parseWavFile(SDL_RWops* wav, size_t wavSize, const char* fileName)
 {
-    PSPWav* audioData = calloc(1,sizeof(PSPWav));
+    WavInfo* audioData = calloc(1,sizeof(WavInfo));
     audioData->pspChannel = -1;
     char idstr[5] = {'\0'};
     //RIFF identifier check
@@ -72,7 +72,7 @@ static PSPWav* parseWavFile(SDL_RWops* wav, size_t wavSize, const char* fileName
     if(strcmp(idstr,"RIFF") != 0)
     {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR,"pspwav: Wav file '%s' is invalid or corrupted",fileName);
-        pspwav_destroy(audioData);
+        wavplayer_destroy(audioData);
         return NULL;
     }
     //True File size check
@@ -80,7 +80,7 @@ static PSPWav* parseWavFile(SDL_RWops* wav, size_t wavSize, const char* fileName
     if(trueFileSize < wavSize)
     {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR,"pspwav: Wav file '%s' is too small",fileName);
-        pspwav_destroy(audioData);
+        wavplayer_destroy(audioData);
         return NULL;
     }
     //Wave format check
@@ -88,7 +88,7 @@ static PSPWav* parseWavFile(SDL_RWops* wav, size_t wavSize, const char* fileName
     if(strcmp(idstr,"WAVE") != 0)
     {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR,"pspwav: Wav file '%s' is not a valid wav file",fileName);
-        pspwav_destroy(audioData);
+        wavplayer_destroy(audioData);
         return NULL;
     }
     bool formatParsed = false;
@@ -103,7 +103,7 @@ static PSPWav* parseWavFile(SDL_RWops* wav, size_t wavSize, const char* fileName
             if(chunkSize != 16)
             {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR,"pspwav: Wav Data format chunk size is invalid in file %s (%d)",fileName,chunkSize);
-                pspwav_destroy(audioData);
+                wavplayer_destroy(audioData);
                 return NULL;
             }
             formatParsed = parseFormatChunk(wav,audioData,fileName);
@@ -113,7 +113,7 @@ static PSPWav* parseWavFile(SDL_RWops* wav, size_t wavSize, const char* fileName
             if((SDL_RWtell(wav) + chunkSize) > wavSize)
             {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR,"pspwav: Wav Data extends beyond the file size in file %s",fileName);
-                pspwav_destroy(audioData);
+                wavplayer_destroy(audioData);
                 return NULL;
             }
             dataParsed = parseDataChunk(wav,audioData,fileName,chunkSize);
@@ -126,13 +126,13 @@ static PSPWav* parseWavFile(SDL_RWops* wav, size_t wavSize, const char* fileName
     if(!formatParsed)
     {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR,"pspwav: Wav Data format not parsed in file %s",fileName);
-        pspwav_destroy(audioData);
+        wavplayer_destroy(audioData);
         return NULL;
     }
     if(!dataParsed)
     {
         SDL_LogError(SDL_LOG_CATEGORY_ERROR,"pspwav: Wav Data not parsed in file %s",fileName);
-        pspwav_destroy(audioData);
+        wavplayer_destroy(audioData);
         return NULL;
     }
     return audioData;
@@ -142,8 +142,8 @@ static PSPWav* parseWavFile(SDL_RWops* wav, size_t wavSize, const char* fileName
 /// @param wavData Memory buffer containing WAV file data
 /// @param wavSize Size of WAV data buffer
 /// @param wavName WAV file name, used for error log messages
-/// @return PSPWav audio data struct for use in pspwav_play (or NULL on failure)
-static PSPWav* loadWavData(void* wavData, size_t wavSize, const char* fileName)
+/// @return WavInfo audio data struct for use in wavplayer_play (or NULL on failure)
+static WavInfo* loadWavData(void* wavData, size_t wavSize, const char* fileName)
 {
     if(wavSize < 44)
     {
@@ -156,7 +156,7 @@ static PSPWav* loadWavData(void* wavData, size_t wavSize, const char* fileName)
         SDL_RWops* wav = SDL_RWFromConstMem(wavData,wavSize);
         if(wav)
         {
-            PSPWav* audioData = parseWavFile(wav,wavSize,fileName);
+            WavInfo* audioData = parseWavFile(wav,wavSize,fileName);
             SDL_RWclose(wav);
             if(!audioData)
                 return NULL;
@@ -165,7 +165,7 @@ static PSPWav* loadWavData(void* wavData, size_t wavSize, const char* fileName)
             if(audioData->pspChannel < 0)
             {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR,"pspwav: Failure to initialize wav channel for '%s' (error code %d)",fileName,audioData->pspChannel);
-                pspwav_destroy(audioData);
+                wavplayer_destroy(audioData);
                 return NULL;
             }
             #endif
@@ -184,21 +184,21 @@ static PSPWav* loadWavData(void* wavData, size_t wavSize, const char* fileName)
     }
 }
 
-PSPWav* pspwav_load(const char* fileName)
+WavInfo* wavplayer_load(const char* fileName)
 {
     size_t wavSize;
     void* wavData = SDL_LoadFile(fileName,&wavSize);
-    PSPWav* audioData = loadWavData(wavData,wavSize,fileName);
+    WavInfo* audioData = loadWavData(wavData,wavSize,fileName);
     SDL_free(wavData);
     return audioData;
 }
 
-PSPWav* pspwav_loadFromMem(void* wavData, size_t wavSize, const char* wavName)
+WavInfo* wavplayer_loadFromMem(void* wavData, size_t wavSize, const char* wavName)
 {
     return loadWavData(wavData,wavSize,wavName);
 }
 
-void pspwav_play(PSPWav* audioData)
+void wavplayer_play(WavInfo* audioData)
 {
     if(!audioData)
         return;
@@ -208,7 +208,7 @@ void pspwav_play(PSPWav* audioData)
     #endif
 }
 
-void pspwav_destroy(PSPWav* audioData)
+void wavplayer_destroy(WavInfo* audioData)
 {
     if(audioData)
     {

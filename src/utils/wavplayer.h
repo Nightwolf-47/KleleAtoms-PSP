@@ -2,24 +2,24 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-typedef struct PSPWav PSPWav;
+typedef struct WavInfo WavInfo;
 
 /// @brief Load a WAV file
 /// @param fileName WAV file path (must not be bigger than ~128 KB)
-/// @return PSPWav audio data struct for use in pspwav_play (or NULL on failure)
-PSPWav* pspwav_load(const char* fileName);
+/// @return WavInfo audio data struct for use in wavplayer_play (or NULL on failure)
+WavInfo* wavplayer_load(const char* fileName);
 
 /// @brief Load a WAV file from memory
 /// @param wavData Memory buffer containing WAV file data
 /// @param wavSize Size of WAV data buffer
 /// @param wavName WAV file name, used for error log messages
-/// @return PSPWav audio data struct for use in pspwav_play (or NULL on failure)
-PSPWav* pspwav_loadFromMem(void* wavData, size_t wavSize, const char* wavName);
+/// @return WavInfo audio data struct for use in wavplayer_play (or NULL on failure)
+WavInfo* wavplayer_loadFromMem(void* wavData, size_t wavSize, const char* wavName);
 
 /// @brief Play a sound
 /// @param audioData Loaded sound audio data
-void pspwav_play(PSPWav* audioData);
+void wavplayer_play(WavInfo* audioData);
 
 /// @brief Deallocate sound memory and remove sound
 /// @param audioData Sound audio data to destroy
-void pspwav_destroy(PSPWav* audioData);
+void wavplayer_destroy(WavInfo* audioData);

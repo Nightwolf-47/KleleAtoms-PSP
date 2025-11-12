@@ -4,7 +4,7 @@
 #include "../../game/save.h"
 #include "../../utils/timer.h"
 #include "../../utils/rendertext.h"
-#include "../../utils/pspwav.h"
+#include "../../utils/wavplayer.h"
 #include "../../game/assetman.h"
 
 // The full button count
@@ -338,7 +338,7 @@ void menuui_update(void)
     if(heldTime >= holdDelay)
     {
         ktimer_setTimeMillis(buttonHeld.holdTimer, 0);
-        pspwav_play(sfxClick);
+        wavplayer_play(sfxClick);
         if(buttons[selectedButton].clickCallback)
             buttons[selectedButton].clickCallback(&buttons[selectedButton], buttonHeld.pressedButton);
     }
@@ -472,7 +472,7 @@ void menuui_press(SDL_GameControllerButton pressedButton)
         buttonHeld.held = true;
         ktimer_setTimeMillis(buttonHeld.holdTimer, startHoldTime);
         buttonHeld.pressedButton = pressedButton;
-        pspwav_play(sfxClick);
+        wavplayer_play(sfxClick);
         if(buttons[selectedButton].clickCallback)
             buttons[selectedButton].clickCallback(&buttons[selectedButton], buttonHeld.pressedButton);
     }

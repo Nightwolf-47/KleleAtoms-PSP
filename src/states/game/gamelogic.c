@@ -1,7 +1,7 @@
 #include "gamelogic.h"
 #include "../../game/state.h"
 #include "../../game/game.h"
-#include "../../utils/pspwav.h"
+#include "../../utils/wavplayer.h"
 #include "gameai.h"
 #include <SDL2/SDL.h>
 #include <limits.h>
@@ -117,7 +117,7 @@ static void explodeAtoms(int x, int y)
     curTile->playerNum = NOPLAYER;
     curTile->atomCount = 0;
     if(logicData->explosionCount < 1000)
-        pspwav_play(sfxExplode);
+        wavplayer_play(sfxExplode);
 }
 
 /// @brief Checks if any surrounding tiles are critical
@@ -403,7 +403,7 @@ void gamelogic_clickedTile(int x, int y, bool isAIMove)
         return;
     logicData->explosionCount = 0;
     logicData->playerStatus[logicData->curPlayer] = PST_PLAYING;
-    pspwav_play(sfxPut);
+    wavplayer_play(sfxPut);
     prepareNewAtoms(x,y);
 }
 

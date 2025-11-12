@@ -30,9 +30,9 @@ struct KAMessage {
 SDL_Window* gameWindow;
 SDL_Renderer* gameRenderer; 
 
-PSPWav* sfxExplode;
-PSPWav* sfxPut;
-PSPWav* sfxClick;
+WavInfo* sfxExplode;
+WavInfo* sfxPut;
+WavInfo* sfxClick;
 
 struct KASettings gameSettings;
 
@@ -125,9 +125,9 @@ static bool initSounds(void)
 
 static void destroySounds(void)
 {
-    pspwav_destroy(sfxExplode);
-    pspwav_destroy(sfxPut);
-    pspwav_destroy(sfxClick);
+    wavplayer_destroy(sfxExplode);
+    wavplayer_destroy(sfxPut);
+    wavplayer_destroy(sfxClick);
     sfxClick = sfxPut = sfxExplode = NULL;
 }
 

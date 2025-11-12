@@ -46,14 +46,14 @@ SDL_Surface* assetman_loadSurface(const char* assetPath)
     return loadedImg;
 }
 
-PSPWav* assetman_loadWav(const char* assetPath)
+WavInfo* assetman_loadWav(const char* assetPath)
 {
-    PSPWav* loadedWav = NULL;
+    WavInfo* loadedWav = NULL;
     if(assetPak)
     {
         PakEntryData entry = PAK_LoadEntry(assetPak, assetPath);
         if(entry.data)
-            loadedWav = pspwav_loadFromMem(entry.data, entry.size, assetPath);
+            loadedWav = wavplayer_loadFromMem(entry.data, entry.size, assetPath);
         PAK_CloseEntry(&entry);
     }
     return loadedWav;

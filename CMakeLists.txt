@@ -12,7 +12,7 @@ add_executable(KleleAtoms-PSP
     src/game/fade.c
     src/game/assetman.c
     src/utils/timer.c
-    src/utils/pspwav.c
+    src/utils/wavplayer.c
     src/utils/rendertext.c
     src/utils/pakread.c
     src/states/menu/menustate.c
