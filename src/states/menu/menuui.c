@@ -311,7 +311,7 @@ bool menuui_init(SDL_Renderer* renderer)
     buttonHeld.held = false;
     int elemsPerRow = (BUTTON_COUNT/BUTTON_ROWS);
     int xoffs = (SCREEN_WIDTH - getRowWidth(elemsPerRow)) / 2;
-    int yoffs = (272-45)/2 - 20;
+    int yoffs = (SCREEN_HEIGHT-45)/2 - 20;
     int curY = yoffs;
     for(int y=0; y<BUTTON_ROWS; y++)
     {
