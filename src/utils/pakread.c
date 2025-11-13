@@ -24,7 +24,7 @@ static uint32_t readInt32(FILE* stream)
 }
 
 // Returns the opened file size
-static size_t getFileSize(FILE* stream)
+static unsigned long getFileSize(FILE* stream)
 {
     long lastPos = ftell(stream);
     fseek(stream,0,SEEK_END);
@@ -44,12 +44,13 @@ static bool parsePakFile(PakFile* file, FILE* stream)
     }
     file->stream = stream;
 
-    size_t fileSize = getFileSize(stream);
+    unsigned long fileSize = getFileSize(stream);
     if(fileSize < 12)
     {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"PAK_OpenFile: File size is not big enough to contain the PAK header (%u < 12)",fileSize);
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"PAK_OpenFile: File size is not big enough to contain the PAK header (%lu < 12)",fileSize);
         return false;
     }
+
     fseek(stream, 0, SEEK_SET);
     char magicStr[5] = {'\0'};
     fread(magicStr, sizeof(char), 4, stream);
@@ -62,7 +63,7 @@ static bool parsePakFile(PakFile* file, FILE* stream)
     uint32_t dirSize = readInt32(stream);
     if(dirOffset==UINT32_MAX || dirSize==UINT32_MAX || (uint64_t)dirOffset+dirSize > fileSize)
     {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"PAK_OpenFile: directory offset + size > filesize (%u+%u > %u)",dirOffset,dirSize,fileSize);
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"PAK_OpenFile: directory offset + size > filesize (%u+%u > %lu)",dirOffset,dirSize,fileSize);
         return false;
     }
     uint32_t entryCount = dirSize / 64;
@@ -82,7 +83,7 @@ static bool parsePakFile(PakFile* file, FILE* stream)
         uint32_t size = readInt32(stream);
         if((uint64_t)offset+size > fileSize)
         {
-            SDL_LogError(SDL_LOG_CATEGORY_ERROR,"PAK_OpenFile: offset + size > fileSize (%u+%u > %u)",offset,size,fileSize);
+            SDL_LogError(SDL_LOG_CATEGORY_ERROR,"PAK_OpenFile: offset + size > fileSize (%u+%u > %lu)",offset,size,fileSize);
             return false;
         }
         file->entries[i].size = size;

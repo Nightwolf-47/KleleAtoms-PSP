@@ -139,8 +139,8 @@ static int getBestWindowScale(void)
     SDL_DisplayMode mode;
     if(SDL_GetCurrentDisplayMode(0,&mode) != 0)
         return 2;
-    int xscale = mode.w / SCREEN_WIDTH / 2;
-    int yscale = mode.h / SCREEN_HEIGHT / 2;
+    int xscale = mode.w / SCREEN_WIDTH * 0.55f;
+    int yscale = mode.h / SCREEN_HEIGHT * 0.55f;
     return SDL_max(SDL_min(xscale,yscale),1);
     #endif
 }
