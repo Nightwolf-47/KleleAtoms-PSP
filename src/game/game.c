@@ -145,6 +145,33 @@ static int getBestWindowScale(void)
     #endif
 }
 
+static SDL_GameControllerButton mapKeyboardToGamepad(SDL_Keycode key)
+{
+    switch(key)
+    {
+        case SDLK_z:
+            return SDL_CONTROLLER_BUTTON_A;
+        case SDLK_x:
+            return SDL_CONTROLLER_BUTTON_B;
+        case SDLK_a:
+            return SDL_CONTROLLER_BUTTON_X;
+        case SDLK_s:
+            return SDL_CONTROLLER_BUTTON_Y;
+        case SDLK_LEFT:
+            return SDL_CONTROLLER_BUTTON_DPAD_LEFT;
+        case SDLK_RIGHT:
+            return SDL_CONTROLLER_BUTTON_DPAD_RIGHT;
+        case SDLK_UP:
+            return SDL_CONTROLLER_BUTTON_DPAD_UP;
+        case SDLK_DOWN:
+            return SDL_CONTROLLER_BUTTON_DPAD_DOWN;
+        case SDLK_RETURN:
+            return SDL_CONTROLLER_BUTTON_START;
+        default:
+            return SDL_CONTROLLER_BUTTON_INVALID;
+    }
+}
+
 bool game_init(void)
 {
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
@@ -235,6 +262,7 @@ void game_loop(void)
         
         while(SDL_PollEvent(&event))
         {
+            SDL_GameControllerButton mappedButton = SDL_CONTROLLER_BUTTON_INVALID;
             switch(event.type)
             {
                 case SDL_CONTROLLERBUTTONDOWN:
@@ -248,6 +276,18 @@ void game_loop(void)
                 case SDL_CONTROLLERDEVICEADDED:
                     SDL_GameControllerOpen(event.cdevice.which);
                     break;
+                #ifndef __PSP__
+                case SDL_KEYDOWN:
+                    mappedButton = mapKeyboardToGamepad(event.key.keysym.sym);
+                    if(mappedButton >= 0 && currentState->controller_pressed && !fadeInProgress)
+                        currentState->controller_pressed(mappedButton, &event);
+                    break;
+                case SDL_KEYUP:
+                    mappedButton = mapKeyboardToGamepad(event.key.keysym.sym);
+                    if(mappedButton >= 0 && currentState->controller_released && !fadeInProgress)
+                        currentState->controller_released(mappedButton, &event);
+                    break;
+                #endif
                 case SDL_QUIT:
                     gameRunning = false;
                     return;
