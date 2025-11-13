@@ -191,7 +191,7 @@ static void gridSizeCallback(MenuUIButton* menuButton, SDL_GameControllerButton 
                 gameSettings.gridHeight = MAX_GRIDHEIGHT;
         }
         if(!menuButton->drawElements[0].img)
-            menuButton->drawElements[0].img = gridWidthTex;
+            menuButton->drawElements[0].img = gridHeightTex;
         snprintf(menuButton->drawElements[1].text,sizeof(menuButton->drawElements[1].text),"%d",gameSettings.gridHeight);
     }
     else
@@ -205,7 +205,7 @@ static void gridSizeCallback(MenuUIButton* menuButton, SDL_GameControllerButton 
                 gameSettings.gridWidth = MAX_GRIDWIDTH;
         }
         if(!menuButton->drawElements[0].img)
-            menuButton->drawElements[0].img = gridHeightTex;
+            menuButton->drawElements[0].img = gridWidthTex;
         gameSettings.gridWidth = SDL_clamp(gameSettings.gridWidth, 5, 13);
         snprintf(menuButton->drawElements[1].text,sizeof(menuButton->drawElements[1].text),"%d",gameSettings.gridWidth);
     }
