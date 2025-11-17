@@ -336,9 +336,7 @@ void game_errorMsg(const char* format, ...)
     vsnprintf(errorBuffer, sizeof(errorBuffer), format, args);
     va_end(args);
 
-    if(SDL_WasInit(SDL_INIT_VIDEO))
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"[ERRORMSG] %s",errorBuffer);
-
+    SDL_LogError(SDL_LOG_CATEGORY_ERROR,"[ERRORMSG] %s",errorBuffer);
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,"KleleAtoms PSP Error",errorBuffer,NULL);
 
     game_quit();
