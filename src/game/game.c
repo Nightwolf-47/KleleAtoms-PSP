@@ -223,7 +223,7 @@ bool game_init(void)
 
     if(!assetman_initFont(gameRenderer,"font/DejaVuSans.ttf",14))
     {
-        game_errorMsg("Couldn't initialize font resources.pk3/font/DejaVuSans.ttf");
+        game_errorMsg("Couldn't initialize font resources.pak/font/DejaVuSans.ttf");
         return false;
     }
 
