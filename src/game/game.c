@@ -174,9 +174,10 @@ static SDL_GameControllerButton mapKeyboardToGamepad(SDL_Keycode key)
 
 bool game_init(void)
 {
+    SDL_SetHint(SDL_HINT_APP_NAME, "KleleAtoms");
+
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
     {
-        printf("Couldn't initialize SDL: %s",SDL_GetError());
         game_errorMsg("Couldn't initialize SDL: %s",SDL_GetError());
         return false;
     }
@@ -338,23 +339,7 @@ void game_errorMsg(const char* format, ...)
     if(SDL_WasInit(SDL_INIT_VIDEO))
         SDL_LogError(SDL_LOG_CATEGORY_ERROR,"[ERRORMSG] %s",errorBuffer);
 
-    #ifdef __PSP__
-    u64 initTicks = getTimeTicks();
-    u64 endTicks = initTicks+5*sceRtcGetTickResolution();
-    pspDebugScreenInit();
-    pspDebugScreenSetXY(0,0);
-    pspDebugScreenSetTextColor(0x000000FF);
-    pspDebugScreenPrintf("ERROR!\n\n");
-    pspDebugScreenSetTextColor(0xFFFFFFFF);
-    pspDebugScreenPrintf("%s",errorBuffer);
-    pspDebugScreenSetXY(0,7);
-    pspDebugScreenPrintf("Closing in ");
-    while(getTimeTicks() < endTicks) {
-        pspDebugScreenSetXY(11,7);
-        pspDebugScreenPrintf("%.02f s", (endTicks-getTimeTicks())/(float)sceRtcGetTickResolution());
-        sceDisplayWaitVblankStart();
-    }
-    #endif
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,"KleleAtoms PSP Error",errorBuffer,NULL);
 
     game_quit();
     exit(1);

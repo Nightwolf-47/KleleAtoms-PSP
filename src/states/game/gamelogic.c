@@ -176,7 +176,7 @@ static void doTileActions(float dt)
             if(curTile->explodeTime > 0)
             {
                 curTile->explodeTime -= dt;
-                if(curTile->explodeTime < 0)
+                if(curTile->explodeTime <= 0)
                     curTile->explodeTime = 0.0f;
                 else
                     logicData->animPlaying = true;
@@ -184,9 +184,11 @@ static void doTileActions(float dt)
             else if(curTile->playerNum >= 0)
             {
                 logicData->playerAtoms[curTile->playerNum] += curTile->atomCount;
-                for(int i=0; i<curTile->atomCount; i++) //Move animated atoms
+                //Move animated atoms
+                for(int i=0; i<curTile->atomCount; i++)
                 {
                     struct KAAtom* curAtom = &curTile->atoms[i];
+                    //If the atom isn't at its target position, move it
                     if((curAtom->curx != curAtom->endx) || (curAtom->cury != curAtom->endy))
                     {
                         logicData->animPlaying = true;
