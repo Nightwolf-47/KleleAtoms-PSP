@@ -117,6 +117,7 @@ static void drawMessage(float dt)
 
 static bool initSounds(void)
 {
+    wavplayer_init();
     sfxExplode = assetman_loadWav("sfx/explode.wav");
     sfxPut = assetman_loadWav("sfx/put.wav");
     sfxClick = assetman_loadWav("sfx/click.wav");
@@ -129,6 +130,7 @@ static void destroySounds(void)
     wavplayer_destroy(sfxPut);
     wavplayer_destroy(sfxClick);
     sfxClick = sfxPut = sfxExplode = NULL;
+    wavplayer_stop();
 }
 
 static int getBestWindowScale(void)

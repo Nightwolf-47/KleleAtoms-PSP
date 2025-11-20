@@ -4,6 +4,12 @@ set(CMAKE_C_STANDARD 17)
 
 project(KleleAtoms-PSP)
 
+if(PSP)
+set(WAVPLAYER src/utils/wavplayerpsp.c)   
+else()
+set(WAVPLAYER src/utils/wavplayermix.c)   
+endif()
+
 add_executable(KleleAtoms-PSP 
     src/main.c
     src/game/game.c
@@ -12,7 +18,6 @@ add_executable(KleleAtoms-PSP
     src/game/fade.c
     src/game/assetman.c
     src/utils/timer.c
-    src/utils/wavplayer.c
     src/utils/rendertext.c
     src/utils/pakread.c
     src/states/menu/menustate.c
@@ -23,19 +28,23 @@ add_executable(KleleAtoms-PSP
     src/states/game/gamedraw.c
     src/states/game/gameai.c
     src/states/game/gametutorial.c
+    ${WAVPLAYER}
 )
 
 include(FindPkgConfig)
 pkg_search_module(SDL2 REQUIRED sdl2)
 pkg_search_module(SDL2_IMAGE REQUIRED SDL2_image)
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
-
 if(PSP)
 set(ADDITIONAL_LIBS "pspdebug" "pspdisplay")
+set(ADDITIONAL_INCLUDES "")
 else()
-set(ADDITIONAL_LIBS "m")
+pkg_search_module(SDL2_MIXER REQUIRED SDL2_mixer)
+set(ADDITIONAL_LIBS "m" ${SDL2_MIXER_LIBRARIES})
+set(ADDITIONAL_INCLUDES ${SDL2_MIXER_INCLUDE_DIRS})
 endif()
+
+target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS} ${ADDITIONAL_INCLUDES})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     ${SDL2_LIBRARIES}

@@ -23,3 +23,10 @@ void wavplayer_play(WavInfo* audioData);
 /// @brief Deallocate sound memory and remove sound
 /// @param audioData Sound audio data to destroy
 void wavplayer_destroy(WavInfo* audioData);
+
+/// @brief Initialize the WAV player
+/// @return true on success, false otherwise
+bool wavplayer_init(void);
+
+// Stop the WAV player
+void wavplayer_stop(void);

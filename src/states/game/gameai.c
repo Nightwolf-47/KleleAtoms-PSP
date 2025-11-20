@@ -289,7 +289,7 @@ static void aiGetSpecialTiles(int difficulty, struct AITiles* tiles)
     }
 }
 
-// Runs the AI algorithm and clicks a random tile out from the AI algorithm recommended tiles
+// Runs the AI algorithm and clicks a random tile from the AI algorithm recommended tiles
 static void aiThinker(void)
 {
     Vec2 selectedTile = (Vec2){-1,-1};
