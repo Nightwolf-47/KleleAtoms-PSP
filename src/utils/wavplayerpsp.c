@@ -118,7 +118,7 @@ void wavplayer_destroy(WavInfo* audioData)
 
 bool wavplayer_init(void)
 {
-    ;
+    return true;
 }
 
 void wavplayer_stop(void)
