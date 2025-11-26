@@ -158,6 +158,13 @@ int loadGame(void)
             closeLoadedSaveFile(file);
             return -2;
         }
+        //Grid size check
+        if(gridWidth > MAX_GRID_WIDTH || gridHeight > MAX_GRID_HEIGHT)
+        {
+            SDL_LogError(SDL_LOG_CATEGORY_ERROR,"loadGame: Save file grid is too big! (%d x %d), max is %d x %d",gridWidth,gridHeight,MAX_GRID_WIDTH,MAX_GRID_HEIGHT);
+            closeLoadedSaveFile(file);
+            return -2;
+        }
         //Parse the rest of header if last check succeeded
         logicData->gridWidth = gridWidth;
         logicData->gridHeight = gridHeight;

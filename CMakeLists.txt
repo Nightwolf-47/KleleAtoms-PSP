@@ -18,6 +18,7 @@ add_executable(KleleAtoms-PSP
     src/game/fade.c
     src/game/assetman.c
     src/utils/timer.c
+    ${WAVPLAYER}
     src/utils/rendertext.c
     src/utils/pakread.c
     src/states/menu/menustate.c
@@ -28,7 +29,6 @@ add_executable(KleleAtoms-PSP
     src/states/game/gamedraw.c
     src/states/game/gameai.c
     src/states/game/gametutorial.c
-    ${WAVPLAYER}
 )
 
 include(FindPkgConfig)
