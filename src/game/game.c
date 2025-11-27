@@ -95,9 +95,15 @@ static void clampSettings(void)
 
 static void getCurrentDate(char* dateTime, size_t len)
 {
+    #ifdef __PSP__
+    ScePspDateTime curTime;
+    sceRtcGetCurrentClockLocalTime(&curTime);
+    snprintf(dateTime,len,"%u-%02u-%02u %02u:%02u:%02u",curTime.year,curTime.month,curTime.day,curTime.hour,curTime.minute,curTime.second);
+    #else
     time_t tempTime = time(NULL);
     struct tm* curTime = localtime(&tempTime);
     strftime(dateTime, len, "%F %T", curTime);
+    #endif
 }
 
 static void drawMessage(float dt)
