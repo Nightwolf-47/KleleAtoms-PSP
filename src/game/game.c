@@ -339,6 +339,22 @@ void game_errorMsg(const char* format, ...)
     va_end(args);
 
     SDL_LogError(SDL_LOG_CATEGORY_ERROR,"[ERRORMSG] %s",errorBuffer);
+
+    #ifdef __PSP__
+    if(gameRenderer) {
+        SDL_SetRenderDrawColor(gameRenderer,0,0,0,SDL_ALPHA_OPAQUE);
+        SDL_RenderClear(gameRenderer);
+        SDL_RenderPresent(gameRenderer);
+    } else { //For some reason, this is required for the error message to work correctly on PSP during init
+        u64 initTicks = getTimeTicks();
+        u64 endTicks = initTicks+5*sceRtcGetTickResolution();
+        pspDebugScreenInit();
+        while(getTimeTicks() < endTicks) {
+            sceDisplayWaitVblankStart();
+        }
+    }
+    #endif
+
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,"KleleAtoms PSP Error",errorBuffer,NULL);
 
     game_quit();
