@@ -26,6 +26,9 @@ If a player loses all their atoms, they lose. The last standing player wins the 
 - [SDL2_image](https://github.com/libsdl-org/SDL_image/tree/SDL2) (License: [Zlib](https://github.com/libsdl-org/SDL_image/blob/SDL2/LICENSE.txt))
 - [stb_truetype](https://github.com/nothings/stb/blob/master/stb_truetype.h) + [stb_rect_pack](https://github.com/nothings/stb/blob/master/stb_rect_pack.h) (License: [Unlicense/MIT](https://github.com/nothings/stb/blob/master/LICENSE)) - located in src/utils/stb  
 
+#### Additionally for non-PSP builds:
+- [SDL2_mixer](https://github.com/libsdl-org/SDL_mixer/tree/SDL2) (License: [Zlib](https://github.com/libsdl-org/SDL_mixer/blob/SDL2/LICENSE.txt))
+
 ## Credits
 - **PSPDEV Organization** - PSPSDK used for the development of this game.
 - **DrPetter** - SFXR, a tool used to make sounds for KleleAtoms.
