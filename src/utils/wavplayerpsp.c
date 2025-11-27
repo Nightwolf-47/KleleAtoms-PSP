@@ -1,4 +1,5 @@
 #include "wavplayer.h"
+#include <stdlib.h>
 #include <SDL2/SDL.h>
 #include <pspaudio.h>
 

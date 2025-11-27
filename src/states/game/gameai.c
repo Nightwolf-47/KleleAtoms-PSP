@@ -3,6 +3,7 @@
 #include "../../game/state.h"
 #include "../../game/game.h"
 #include "../../utils/timer.h"
+#include <stdlib.h>
 
 // Tile data used by the AI algorithm
 struct AITiles {

@@ -1,6 +1,7 @@
 #include "pakread.h"
 #include <stdio.h>
 #include <SDL2/SDL.h>
+#include <stdlib.h>
 
 typedef struct PakEntry {
     char name[56];

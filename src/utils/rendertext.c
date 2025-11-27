@@ -1,5 +1,6 @@
 #include "rendertext.h"
 #include <SDL2/SDL.h>
+#include <stdlib.h>
 #define STB_TRUETYPE_IMPLEMENTATION
 #define STB_RECT_PACK_IMPLEMENTATION
 #define STBTT_STATIC
@@ -13,17 +14,8 @@ static stbtt_packedchar packedChars[CHAR_AMOUNT];
 static SDL_Texture* fontAtlas;
 static SDL_Renderer* renderer;
 static float fontHeight;
-enum TextAlignment textAlign;
-int drawWidth;
-
-// Get the SDL window width
-static int getWindowWidth(SDL_Renderer* rend)
-{
-    SDL_Window* win = SDL_RenderGetWindow(rend);
-    int w;
-    SDL_GetWindowSize(win,&w,NULL);
-    return w;
-}
+static enum TextAlignment textAlign;
+static int drawWidth;
 
 /// @brief Create a font atlas texture from stb_truetype packed font
 /// @param rend SDL_Renderer to use for the texture
@@ -60,7 +52,7 @@ bool rendertext_init_memory(SDL_Renderer* rend, unsigned const char* fontData, s
         rendertext_stop();
 
     textAlign = TEXT_ALIGN_LEFT;
-    drawWidth = getWindowWidth(rend);
+    drawWidth = SCREEN_WIDTH;
     if(fontData)
     {
         stbtt_pack_context pack;
@@ -192,7 +184,7 @@ enum TextAlignment rendertext_getTextAlignment(int* textWidth)
 void rendertext_setTextAlignment(enum TextAlignment align, int maxTextWidth)
 {
     if(renderer && maxTextWidth < 0)
-        drawWidth = getWindowWidth(renderer);
+        drawWidth = SCREEN_WIDTH;
     else
         drawWidth = maxTextWidth;
     textAlign = align;

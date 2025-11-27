@@ -27,8 +27,8 @@ struct KAMessage {
     bool isShown;
 };
 
-SDL_Window* gameWindow;
-SDL_Renderer* gameRenderer; 
+SDL_Window* gameWindow = NULL;
+SDL_Renderer* gameRenderer = NULL;
 
 WavInfo* sfxExplode;
 WavInfo* sfxPut;
