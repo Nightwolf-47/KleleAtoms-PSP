@@ -12,7 +12,7 @@ static SDL_Texture* logoImage;
 static SDL_Texture* menuAtomImage;
 
 //Game version string shown in the bottom left corner
-const char* versionStr = "v1.1 Dev";
+const char* versionStr = "v1.1";
 
 //Atom colors for each player
 static const SDL_Color atomPlayerColors[4] = {

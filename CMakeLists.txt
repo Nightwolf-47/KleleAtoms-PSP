@@ -58,7 +58,7 @@ if(PSP)
         ICON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/ICON0.PNG
         BACKGROUND_PATH ${CMAKE_CURRENT_SOURCE_DIR}/KABG.PNG
         PREVIEW_PATH NULL
-        TITLE "KleleAtoms PSP v1.1 Dev"
+        TITLE "KleleAtoms PSP v1.1"
         VERSION 01.10
         OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/kleleatoms
     )
