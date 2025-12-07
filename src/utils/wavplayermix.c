@@ -101,7 +101,7 @@ bool wavplayer_init(void)
 {
     if(Mix_OpenAudio(44100,AUDIO_S16,2,2048) == -1)
     {
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"wavplayer: Could initialize SDL_Mixer, Reason: %s",SDL_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"wavplayer: Could not initialize SDL_Mixer, Reason: %s",SDL_GetError());
         return false;
     }
     return true;
