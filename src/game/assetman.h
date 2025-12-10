@@ -21,7 +21,7 @@ SDL_Texture* assetman_loadTexture(SDL_Renderer* renderer, const char* assetPath)
 
 /// @brief Load a WAV file from loaded PAK file
 /// @param assetPath WAV file path inside the PAK file
-/// @return Sound data for use in pspwav on success, NULL on failure
+/// @return Sound data for use in wavplayer on success, NULL on failure
 WavInfo* assetman_loadWav(const char* assetPath);
 
 /// @brief Load a font from loaded PAK file and initialize text drawer with it
