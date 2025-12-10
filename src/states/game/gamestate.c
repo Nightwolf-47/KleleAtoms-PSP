@@ -93,10 +93,14 @@ void gamestate_init(SDL_Renderer* rend)
         ttime = loadGame();
     }
     gamedraw_initAssets(logicData->gridWidth, logicData->gridHeight);
-    if(ttime != -1)
+    if(ttime >= 0)
     {
         ktimer_setTimeSeconds(gameTimer, ttime);
         game_printMsg("Saved game loaded.",3);
+    }
+    else if(ttime < -1)
+    {
+        game_printMsg("Save file is invalid!",3);
     }
 }
 

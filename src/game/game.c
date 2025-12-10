@@ -5,6 +5,7 @@
 #include "assetman.h"
 #include "../utils/timer.h"
 #include "../utils/rendertext.h"
+#include <time.h>
 
 //PSP RTC tick functions are more accurate on that platform than SDL2 PerformanceCounter
 //PSP_DISABLE_AUTOSTART_PTHREAD means pthread functions won't be linked with the program
@@ -26,12 +27,12 @@ struct KAMessage {
     bool isShown;
 };
 
-SDL_Window* gameWindow;
-SDL_Renderer* gameRenderer; 
+SDL_Window* gameWindow = NULL;
+SDL_Renderer* gameRenderer = NULL;
 
-PSPWav* sfxExplode;
-PSPWav* sfxPut;
-PSPWav* sfxClick;
+WavInfo* sfxExplode;
+WavInfo* sfxPut;
+WavInfo* sfxClick;
 
 struct KASettings gameSettings;
 
@@ -94,9 +95,15 @@ static void clampSettings(void)
 
 static void getCurrentDate(char* dateTime, size_t len)
 {
+    #ifdef __PSP__
+    ScePspDateTime curTime;
+    sceRtcGetCurrentClockLocalTime(&curTime);
+    snprintf(dateTime,len,"%u-%02u-%02u %02u:%02u:%02u",curTime.year,curTime.month,curTime.day,curTime.hour,curTime.minute,curTime.second);
+    #else
     time_t tempTime = time(NULL);
     struct tm* curTime = localtime(&tempTime);
     strftime(dateTime, len, "%F %T", curTime);
+    #endif
 }
 
 static void drawMessage(float dt)
@@ -116,6 +123,7 @@ static void drawMessage(float dt)
 
 static bool initSounds(void)
 {
+    wavplayer_init();
     sfxExplode = assetman_loadWav("sfx/explode.wav");
     sfxPut = assetman_loadWav("sfx/put.wav");
     sfxClick = assetman_loadWav("sfx/click.wav");
@@ -124,17 +132,60 @@ static bool initSounds(void)
 
 static void destroySounds(void)
 {
-    pspwav_destroy(sfxExplode);
-    pspwav_destroy(sfxPut);
-    pspwav_destroy(sfxClick);
+    wavplayer_destroy(sfxExplode);
+    wavplayer_destroy(sfxPut);
+    wavplayer_destroy(sfxClick);
     sfxClick = sfxPut = sfxExplode = NULL;
+    wavplayer_stop();
+}
+
+static int getBestWindowScale(void)
+{
+    #ifdef __PSP__
+    return 1;
+    #else
+    SDL_DisplayMode mode;
+    if(SDL_GetCurrentDisplayMode(0,&mode) != 0)
+        return 2;
+    int xscale = mode.w / SCREEN_WIDTH * 0.55f;
+    int yscale = mode.h / SCREEN_HEIGHT * 0.55f;
+    return SDL_max(SDL_min(xscale,yscale),1);
+    #endif
+}
+
+static SDL_GameControllerButton mapKeyboardToGamepad(SDL_Keycode key)
+{
+    switch(key)
+    {
+        case SDLK_z:
+            return SDL_CONTROLLER_BUTTON_A;
+        case SDLK_x:
+            return SDL_CONTROLLER_BUTTON_B;
+        case SDLK_a:
+            return SDL_CONTROLLER_BUTTON_X;
+        case SDLK_s:
+            return SDL_CONTROLLER_BUTTON_Y;
+        case SDLK_LEFT:
+            return SDL_CONTROLLER_BUTTON_DPAD_LEFT;
+        case SDLK_RIGHT:
+            return SDL_CONTROLLER_BUTTON_DPAD_RIGHT;
+        case SDLK_UP:
+            return SDL_CONTROLLER_BUTTON_DPAD_UP;
+        case SDLK_DOWN:
+            return SDL_CONTROLLER_BUTTON_DPAD_DOWN;
+        case SDLK_RETURN:
+            return SDL_CONTROLLER_BUTTON_START;
+        default:
+            return SDL_CONTROLLER_BUTTON_INVALID;
+    }
 }
 
 bool game_init(void)
 {
+    SDL_SetHint(SDL_HINT_APP_NAME, "KleleAtoms");
+
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
     {
-        printf("Couldn't initialize SDL: %s",SDL_GetError());
         game_errorMsg("Couldn't initialize SDL: %s",SDL_GetError());
         return false;
     }
@@ -143,7 +194,9 @@ bool game_init(void)
     getCurrentDate(datetime,64);
     SDL_Log("[%s] Started the game.",datetime);
 
-    gameWindow = SDL_CreateWindow("KleleAtoms",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,SCREEN_WIDTH,SCREEN_HEIGHT,0);
+    int windowScale = getBestWindowScale();
+
+    gameWindow = SDL_CreateWindow("KleleAtoms",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,SCREEN_WIDTH*windowScale,SCREEN_HEIGHT*windowScale,0);
     if(!gameWindow)
     {
         game_errorMsg("Couldn't initialize SDL Window: %s", SDL_GetError());
@@ -157,6 +210,11 @@ bool game_init(void)
         return false;
     }
 
+    #ifndef __PSP__
+    SDL_RenderSetIntegerScale(gameRenderer, SDL_TRUE);
+    SDL_RenderSetLogicalSize(gameRenderer, SCREEN_WIDTH, SCREEN_HEIGHT);
+    #endif
+
     SDL_SetRenderDrawBlendMode(gameRenderer,SDL_BLENDMODE_BLEND);
 
     if((IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) == 0)
@@ -165,15 +223,15 @@ bool game_init(void)
         return false;
     }
 
-    if(!assetman_init("res/resources.pak"))
+    if(!assetman_init("resources.pak"))
     {
-        game_errorMsg("Couldn't load PAK asset file res/resources.pak");
+        game_errorMsg("Couldn't load PAK asset file resources.pak");
         return false;
     }
 
-    if(!rendertext_init(gameRenderer,"res/font/DejaVuSans.ttf",14))
+    if(!assetman_initFont(gameRenderer,"font/DejaVuSans.ttf",14))
     {
-        game_errorMsg("Couldn't initialize font res/font/DejaVuSans.ttf");
+        game_errorMsg("Couldn't initialize font resources.pak/font/DejaVuSans.ttf");
         return false;
     }
 
@@ -213,6 +271,7 @@ void game_loop(void)
         
         while(SDL_PollEvent(&event))
         {
+            SDL_GameControllerButton mappedButton = SDL_CONTROLLER_BUTTON_INVALID;
             switch(event.type)
             {
                 case SDL_CONTROLLERBUTTONDOWN:
@@ -226,6 +285,18 @@ void game_loop(void)
                 case SDL_CONTROLLERDEVICEADDED:
                     SDL_GameControllerOpen(event.cdevice.which);
                     break;
+                #ifndef __PSP__
+                case SDL_KEYDOWN:
+                    mappedButton = mapKeyboardToGamepad(event.key.keysym.sym);
+                    if(mappedButton >= 0 && currentState->controller_pressed && !fadeInProgress)
+                        currentState->controller_pressed(mappedButton, &event);
+                    break;
+                case SDL_KEYUP:
+                    mappedButton = mapKeyboardToGamepad(event.key.keysym.sym);
+                    if(mappedButton >= 0 && currentState->controller_released && !fadeInProgress)
+                        currentState->controller_released(mappedButton, &event);
+                    break;
+                #endif
                 case SDL_QUIT:
                     gameRunning = false;
                     return;
@@ -273,26 +344,24 @@ void game_errorMsg(const char* format, ...)
     vsnprintf(errorBuffer, sizeof(errorBuffer), format, args);
     va_end(args);
 
-    if(SDL_WasInit(SDL_INIT_VIDEO))
-        SDL_LogError(SDL_LOG_CATEGORY_ERROR,"[ERRORMSG] %s",errorBuffer);
+    SDL_LogError(SDL_LOG_CATEGORY_ERROR,"[ERRORMSG] %s",errorBuffer);
 
     #ifdef __PSP__
-    u64 initTicks = getTimeTicks();
-    u64 endTicks = initTicks+5*sceRtcGetTickResolution();
-    pspDebugScreenInit();
-    pspDebugScreenSetXY(0,0);
-    pspDebugScreenSetTextColor(0x000000FF);
-    pspDebugScreenPrintf("ERROR!\n\n");
-    pspDebugScreenSetTextColor(0xFFFFFFFF);
-    pspDebugScreenPrintf("%s",errorBuffer);
-    pspDebugScreenSetXY(0,7);
-    pspDebugScreenPrintf("Closing in ");
-    while(getTimeTicks() < endTicks) {
-        pspDebugScreenSetXY(11,7);
-        pspDebugScreenPrintf("%.02f s", (endTicks-getTimeTicks())/(float)sceRtcGetTickResolution());
-        sceDisplayWaitVblankStart();
+    if(gameRenderer) {
+        SDL_SetRenderDrawColor(gameRenderer,0,0,0,SDL_ALPHA_OPAQUE);
+        SDL_RenderClear(gameRenderer);
+        SDL_RenderPresent(gameRenderer);
+    } else { //For some reason, this is required for the error message to work correctly on PSP during init
+        u64 initTicks = getTimeTicks();
+        u64 endTicks = initTicks+5*sceRtcGetTickResolution();
+        pspDebugScreenInit();
+        while(getTimeTicks() < endTicks) {
+            sceDisplayWaitVblankStart();
+        }
     }
     #endif
+
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,"KleleAtoms PSP Error",errorBuffer,NULL);
 
     game_quit();
     exit(1);

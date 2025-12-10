@@ -12,7 +12,7 @@ void saveSettings(void);
 bool isSavePresent(void);
 
 /// @brief Load the game from KSF (KleleAtoms Save Format)
-/// @return New game time in seconds
+/// @return New game time in seconds (-1 if no save was present, other negative number if save is invalid)
 int loadGame(void);
 
 /// @brief Save the game to KSF (KleleAtoms Save Format) 

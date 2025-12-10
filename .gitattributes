@@ -1,0 +1,2 @@
+*.sh text eol=lf
+src/utils/stb/*.h text eol=lf

@@ -1,10 +1,11 @@
 #include "rendertext.h"
 #include <SDL2/SDL.h>
+#include <stdlib.h>
 #define STB_TRUETYPE_IMPLEMENTATION
 #define STB_RECT_PACK_IMPLEMENTATION
 #define STBTT_STATIC
-#include <stb_rect_pack.h>
-#include <stb_truetype.h>
+#include "stb/stb_rect_pack.h"
+#include "stb/stb_truetype.h"
 
 #define CHAR_AMOUNT 128
 #define SCREEN_WIDTH 480
@@ -13,17 +14,8 @@ static stbtt_packedchar packedChars[CHAR_AMOUNT];
 static SDL_Texture* fontAtlas;
 static SDL_Renderer* renderer;
 static float fontHeight;
-enum TextAlignment textAlign;
-int drawWidth;
-
-// Get the SDL window width
-static int getWindowWidth(SDL_Renderer* rend)
-{
-    SDL_Window* win = SDL_RenderGetWindow(rend);
-    int w;
-    SDL_GetWindowSize(win,&w,NULL);
-    return w;
-}
+static enum TextAlignment textAlign;
+static int drawWidth;
 
 /// @brief Create a font atlas texture from stb_truetype packed font
 /// @param rend SDL_Renderer to use for the texture
@@ -31,7 +23,7 @@ static int getWindowWidth(SDL_Renderer* rend)
 /// @return Font atlas texture on success, NULL on failure
 static SDL_Texture* createTextureFont(SDL_Renderer* rend, unsigned char* fontPixels)
 {
-    SDL_Surface* fontSurface = SDL_CreateRGBSurfaceWithFormat(0,FONT_PIXEL_ARRAY_SIZE,FONT_PIXEL_ARRAY_SIZE,32,SDL_PIXELFORMAT_ABGR8888);
+    SDL_Surface* fontSurface = SDL_CreateRGBSurfaceWithFormat(0,FONT_PIXEL_ARRAY_SIZE,FONT_PIXEL_ARRAY_SIZE,32,SDL_PIXELFORMAT_RGBA32);
     if(fontSurface)
     {
         SDL_LockSurface(fontSurface);
@@ -54,15 +46,13 @@ static SDL_Texture* createTextureFont(SDL_Renderer* rend, unsigned char* fontPix
     }
 }
 
-bool rendertext_init(SDL_Renderer* rend, const char* fontFileName, float height)
+bool rendertext_init_memory(SDL_Renderer* rend, unsigned const char* fontData, size_t fontDataSize, float height)
 {
     if(fontAtlas)
         rendertext_stop();
 
     textAlign = TEXT_ALIGN_LEFT;
-    drawWidth = getWindowWidth(rend);
-    size_t fontDataSize;
-    unsigned char* fontData = SDL_LoadFile(fontFileName,&fontDataSize);
+    drawWidth = SCREEN_WIDTH;
     if(fontData)
     {
         stbtt_pack_context pack;
@@ -70,7 +60,6 @@ bool rendertext_init(SDL_Renderer* rend, const char* fontFileName, float height)
         if(!fontPixels)
         {
             SDL_LogError(SDL_LOG_CATEGORY_ERROR, "rendertext_init: Couldn't allocate font pixel data");
-            SDL_free(fontData);
             return false;
         }
         
@@ -79,7 +68,6 @@ bool rendertext_init(SDL_Renderer* rend, const char* fontFileName, float height)
         if(!stbtt_PackFontRange(&pack, fontData, 0, STBTT_POINT_SIZE(height), 1, CHAR_AMOUNT-1, packedChars))
         {
             SDL_LogError(SDL_LOG_CATEGORY_ERROR, "rendertext_init: FONT_PIXEL_ARRAY_SIZE is too small for the given font size + oversampling settings");
-            SDL_free(fontData);
             free(fontPixels);
             stbtt_PackEnd(&pack);
             return false;
@@ -87,7 +75,6 @@ bool rendertext_init(SDL_Renderer* rend, const char* fontFileName, float height)
         stbtt_PackEnd(&pack);
 
         fontAtlas = createTextureFont(rend,fontPixels);
-        SDL_free(fontData);
         free(fontPixels);
         if(!fontAtlas)
             return false;
@@ -100,6 +87,15 @@ bool rendertext_init(SDL_Renderer* rend, const char* fontFileName, float height)
         SDL_LogError(SDL_LOG_CATEGORY_ERROR, "rendertext_init: Couldn't load the font!");
         return false;
     }
+}
+
+bool rendertext_init(SDL_Renderer* rend, const char* fontFileName, float height)
+{
+    size_t fontDataSize;
+    unsigned char* fontData = SDL_LoadFile(fontFileName,&fontDataSize);
+    bool initSuccess = rendertext_init_memory(rend, fontData, fontDataSize, height);
+    SDL_free(fontData);
+    return initSuccess;
 }
 
 /// @brief Get a width of a text line
@@ -188,7 +184,7 @@ enum TextAlignment rendertext_getTextAlignment(int* textWidth)
 void rendertext_setTextAlignment(enum TextAlignment align, int maxTextWidth)
 {
     if(renderer && maxTextWidth < 0)
-        drawWidth = getWindowWidth(renderer);
+        drawWidth = SCREEN_WIDTH;
     else
         drawWidth = maxTextWidth;
     textAlign = align;

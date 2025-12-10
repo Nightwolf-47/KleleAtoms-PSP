@@ -4,7 +4,7 @@
 #include "../../game/save.h"
 #include "../../utils/timer.h"
 #include "../../utils/rendertext.h"
-#include "../../utils/pspwav.h"
+#include "../../utils/wavplayer.h"
 #include "../../game/assetman.h"
 
 // The full button count
@@ -56,10 +56,10 @@ typedef struct MenuDrawElement {
 } MenuDrawElement;
 
 static const SDL_Color backgroundColor = {0x80,0x80,0x80,SDL_ALPHA_OPAQUE};
-static SDL_Color outlineColor = {0xFF,0xFF,0xFF,SDL_ALPHA_OPAQUE};
-static SDL_Color outlineColorSelect = {0xFF,0xBF,0x00,SDL_ALPHA_OPAQUE};
-static SDL_Color backgroundColorSelect = {0x70,0x70,0x70,SDL_ALPHA_OPAQUE};
-static SDL_Color backgroundColorPress = {0x58,0x58,0x58,SDL_ALPHA_OPAQUE};
+static const SDL_Color outlineColor = {0xFF,0xFF,0xFF,SDL_ALPHA_OPAQUE};
+static const SDL_Color outlineColorSelect = {0xFF,0xBF,0x00,SDL_ALPHA_OPAQUE};
+static const SDL_Color backgroundColorSelect = {0x70,0x70,0x70,SDL_ALPHA_OPAQUE};
+static const SDL_Color backgroundColorPress = {0x58,0x58,0x58,SDL_ALPHA_OPAQUE};
 
 struct MenuUIButton {
     MenuDrawElement drawElements[2];
@@ -191,7 +191,7 @@ static void gridSizeCallback(MenuUIButton* menuButton, SDL_GameControllerButton 
                 gameSettings.gridHeight = MAX_GRIDHEIGHT;
         }
         if(!menuButton->drawElements[0].img)
-            menuButton->drawElements[0].img = gridWidthTex;
+            menuButton->drawElements[0].img = gridHeightTex;
         snprintf(menuButton->drawElements[1].text,sizeof(menuButton->drawElements[1].text),"%d",gameSettings.gridHeight);
     }
     else
@@ -205,7 +205,7 @@ static void gridSizeCallback(MenuUIButton* menuButton, SDL_GameControllerButton 
                 gameSettings.gridWidth = MAX_GRIDWIDTH;
         }
         if(!menuButton->drawElements[0].img)
-            menuButton->drawElements[0].img = gridHeightTex;
+            menuButton->drawElements[0].img = gridWidthTex;
         gameSettings.gridWidth = SDL_clamp(gameSettings.gridWidth, 5, 13);
         snprintf(menuButton->drawElements[1].text,sizeof(menuButton->drawElements[1].text),"%d",gameSettings.gridWidth);
     }
@@ -249,7 +249,7 @@ static MenuUIButton buttons[BUTTON_COUNT] = {
         .clickCallback = &gridSizeCallback,
         .rect = normalButtonRect,
         .buttonVal = 0,
-        .description = "Set grid width. ("__XSTRING(MIN_GRIDWIDTH)"-"__XSTRING(MAX_GRIDWIDTH)")"
+        .description = "Set grid width. ("XSTR(MIN_GRIDWIDTH)"-"XSTR(MAX_GRIDWIDTH)")"
     },
     {
         .drawElements = {{MDE_IMAGE,0,defaultColor,{0},{0,0},NULL},{MDE_TEXT,60,blackColor,{0},{0,0},NULL}},
@@ -257,7 +257,7 @@ static MenuUIButton buttons[BUTTON_COUNT] = {
         .clickCallback = &gridSizeCallback,
         .rect = normalButtonRect,
         .buttonVal = 1,
-        .description = "Set grid height. ("__XSTRING(MIN_GRIDHEIGHT)"-"__XSTRING(MAX_GRIDHEIGHT)")"
+        .description = "Set grid height. ("XSTR(MIN_GRIDHEIGHT)"-"XSTR(MAX_GRIDHEIGHT)")"
     },
     {
         .drawElements = {{MDE_IMAGE,0,defaultColor,{0},{0,0},NULL},{MDE_IMAGE,0,defaultColor,{0},{0,0},NULL}},
@@ -311,7 +311,7 @@ bool menuui_init(SDL_Renderer* renderer)
     buttonHeld.held = false;
     int elemsPerRow = (BUTTON_COUNT/BUTTON_ROWS);
     int xoffs = (SCREEN_WIDTH - getRowWidth(elemsPerRow)) / 2;
-    int yoffs = (272-45)/2 - 20;
+    int yoffs = (SCREEN_HEIGHT-45)/2 - 20;
     int curY = yoffs;
     for(int y=0; y<BUTTON_ROWS; y++)
     {
@@ -338,7 +338,7 @@ void menuui_update(void)
     if(heldTime >= holdDelay)
     {
         ktimer_setTimeMillis(buttonHeld.holdTimer, 0);
-        pspwav_play(sfxClick);
+        wavplayer_play(sfxClick);
         if(buttons[selectedButton].clickCallback)
             buttons[selectedButton].clickCallback(&buttons[selectedButton], buttonHeld.pressedButton);
     }
@@ -472,7 +472,7 @@ void menuui_press(SDL_GameControllerButton pressedButton)
         buttonHeld.held = true;
         ktimer_setTimeMillis(buttonHeld.holdTimer, startHoldTime);
         buttonHeld.pressedButton = pressedButton;
-        pspwav_play(sfxClick);
+        wavplayer_play(sfxClick);
         if(buttons[selectedButton].clickCallback)
             buttons[selectedButton].clickCallback(&buttons[selectedButton], buttonHeld.pressedButton);
     }

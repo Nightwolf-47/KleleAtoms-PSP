@@ -1,5 +1,6 @@
 #include "assetman.h"
 #include "../utils/pakread.h"
+#include "../utils/rendertext.h"
 #include <SDL2/SDL_image.h>
 
 //Loaded asset PAK file data
@@ -45,17 +46,30 @@ SDL_Surface* assetman_loadSurface(const char* assetPath)
     return loadedImg;
 }
 
-PSPWav* assetman_loadWav(const char* assetPath)
+WavInfo* assetman_loadWav(const char* assetPath)
 {
-    PSPWav* loadedWav = NULL;
+    WavInfo* loadedWav = NULL;
     if(assetPak)
     {
         PakEntryData entry = PAK_LoadEntry(assetPak, assetPath);
         if(entry.data)
-            loadedWav = pspwav_loadFromMem(entry.data, entry.size, assetPath);
+            loadedWav = wavplayer_loadFromMem(entry.data, entry.size, assetPath);
         PAK_CloseEntry(&entry);
     }
     return loadedWav;
+}
+
+bool assetman_initFont(SDL_Renderer* renderer, const char* assetPath, float height)
+{
+    bool fontLoaded = false;
+    if(assetPak)
+    {
+        PakEntryData entry = PAK_LoadEntry(assetPak, assetPath);
+        if(entry.data)
+            fontLoaded = rendertext_init_memory(renderer, entry.data, entry.size, height);
+        PAK_CloseEntry(&entry);
+    }
+    return fontLoaded;
 }
 
 void assetman_stop(void)

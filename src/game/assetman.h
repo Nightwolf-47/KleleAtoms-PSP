@@ -1,7 +1,7 @@
 #pragma once
 #include <stdbool.h>
 #include <SDL2/SDL.h>
-#include "../utils/pspwav.h"
+#include "../utils/wavplayer.h"
 
 /// @brief Initalize asset manager by giving it the path of a PAK file
 /// @param pakPath PAK asset file path
@@ -21,8 +21,15 @@ SDL_Texture* assetman_loadTexture(SDL_Renderer* renderer, const char* assetPath)
 
 /// @brief Load a WAV file from loaded PAK file
 /// @param assetPath WAV file path inside the PAK file
-/// @return Sound data for use in pspwav on success, NULL on failure
-PSPWav* assetman_loadWav(const char* assetPath);
+/// @return Sound data for use in wavplayer on success, NULL on failure
+WavInfo* assetman_loadWav(const char* assetPath);
+
+/// @brief Load a font from loaded PAK file and initialize text drawer with it
+/// @param renderer SDL renderer used by text drawer
+/// @param assetPath TTF font path inside the PAK file
+/// @param height Font height in pixels
+/// @return true on success, false on failure
+bool assetman_initFont(SDL_Renderer* renderer, const char* assetPath, float height);
 
 // Closes the PAK file and stops the asset manager
 void assetman_stop(void);

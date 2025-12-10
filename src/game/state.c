@@ -36,9 +36,9 @@ void loadStates(void)
 static void doStateChange(enum GameStateId newStateId)
 {
     saveSettings();
-    if(newStateId >= STATE_COUNT || newStateId < 0) //Invalid state Id = quit the game
+    if(newStateId >= STATE_COUNT || newStateId < 0) //Invalid state Id
     {
-        exit(0);
+        game_errorMsg("Invalid game state %d", newStateId);
         return;
     }
     
@@ -74,10 +74,10 @@ static void changeStateAfterFade(void)
 
 void changeState(enum GameStateId newStateId)
 {
-    if(newStateId >= STATE_COUNT || newStateId < 0) //Invalid state Id = quit the game
+    if(newStateId >= STATE_COUNT || newStateId < 0) //Invalid state Id
     {
         saveSettings();
-        exit(0);
+        game_errorMsg("Invalid game state %d", newStateId);
         return;
     }
     

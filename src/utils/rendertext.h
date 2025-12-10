@@ -11,6 +11,14 @@ enum TextAlignment {
     TEXT_ALIGN_RIGHT
 };
 
+/// @brief Load a font for use with rendertext_* functions from a memory buffer
+/// @param rend SDL Renderer to draw to
+/// @param fontData Font data read from a TTF file
+/// @param fontDataSize Size of font data in bytes
+/// @param height Font height in pixels
+/// @return true on success, false on failure
+bool rendertext_init_memory(SDL_Renderer* rend, unsigned const char* fontData, size_t fontDataSize, float height);
+
 /// @brief Load a font for use with rendertext_* functions
 /// @param rend SDL Renderer to draw to
 /// @param fontFileName Path to the TTF font file

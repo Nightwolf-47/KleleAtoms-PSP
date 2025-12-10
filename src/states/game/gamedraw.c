@@ -66,8 +66,8 @@ static SDL_Texture* initGrid(int gridWidth, int gridHeight)
 
 void gamedraw_initAssets(int gridWidth, int gridHeight)
 {
-    gridStartX = (480-gridWidth*TILESIZE) / 2;
-    gridStartY = (248-gridHeight*TILESIZE) / 2 + 20;
+    gridStartX = (SCREEN_WIDTH-gridWidth*TILESIZE) / 2;
+    gridStartY = (SCREEN_HEIGHT-24-gridHeight*TILESIZE) / 2 + 20;
     victoryTime = -1;
 
     texAtom = assetman_loadTexture(gameRenderer, "game/atom.png");
@@ -93,6 +93,7 @@ void gamedraw_drawGrid(void)
 
 void gamedraw_drawAtoms(void)
 {
+    SDL_Rect explodeRect = {-1,-1,11,11};
     for(int x=0; x<logicData->gridWidth; x++)
     {
         for(int y=0; y<logicData->gridHeight; y++)
@@ -102,8 +103,8 @@ void gamedraw_drawAtoms(void)
             int basey = gridStartY+(y*TILESIZE);
             if(curTile->explodeTime > 0)
             {
-                SDL_Rect explodeRect = {10+basex,10+basey,11,11};
-                SDL_RenderCopy(gameRenderer, texExplode, NULL, &explodeRect);
+                explodeRect.x = 10+basex;
+                explodeRect.y = 10+basey;
             }
             else if(curTile->playerNum >= 0)
             {
@@ -119,6 +120,8 @@ void gamedraw_drawAtoms(void)
             }
         }
     }
+    if(explodeRect.x >= 0)
+        SDL_RenderCopy(gameRenderer, texExplode, NULL, &explodeRect);
 }
 
 void gamedraw_drawHUD(Sint32 gameTime)
@@ -253,5 +256,20 @@ void gamedraw_destroyAssets(void)
     {
         SDL_DestroyTexture(texSelector);
         texSelector = NULL;
+    }
+    if(texPlayerAI)
+    {
+        SDL_DestroyTexture(texPlayerAI);
+        texPlayerAI = NULL;
+    }
+    if(gameGrid)
+    {
+        SDL_DestroyTexture(gameGrid);
+        gameGrid = NULL;
+    }
+    if(pauseButtons)
+    {
+        SDL_DestroyTexture(pauseButtons);
+        pauseButtons = NULL;
     }
 }

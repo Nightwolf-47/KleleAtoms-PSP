@@ -24,7 +24,10 @@ If a player loses all their atoms, they lose. The last standing player wins the 
 ## Third-party libraries used
 - [SDL2](https://github.com/libsdl-org/SDL/tree/SDL2) (License: [Zlib](https://github.com/libsdl-org/SDL/blob/SDL2/LICENSE.txt))
 - [SDL2_image](https://github.com/libsdl-org/SDL_image/tree/SDL2) (License: [Zlib](https://github.com/libsdl-org/SDL_image/blob/SDL2/LICENSE.txt))
-- [stb_truetype](https://github.com/nothings/stb/blob/master/stb_truetype.h) + [stb_rect_pack](https://github.com/nothings/stb/blob/master/stb_rect_pack.h) (License: [Unlicense/MIT](https://github.com/nothings/stb/blob/master/LICENSE))  
+- [stb_truetype](https://github.com/nothings/stb/blob/master/stb_truetype.h) + [stb_rect_pack](https://github.com/nothings/stb/blob/master/stb_rect_pack.h) (License: [Unlicense/MIT](https://github.com/nothings/stb/blob/master/LICENSE)) - located in src/utils/stb  
+
+#### Additionally for non-PSP builds:
+- [SDL2_mixer](https://github.com/libsdl-org/SDL_mixer/tree/SDL2) (License: [Zlib](https://github.com/libsdl-org/SDL_mixer/blob/SDL2/LICENSE.txt))
 
 ## Credits
 - **PSPDEV Organization** - PSPSDK used for the development of this game.
@@ -36,14 +39,17 @@ If a player loses all their atoms, they lose. The last standing player wins the 
     - If your SDK doesn't have the libraries preinstalled, you can type  
     `psp-pacman -S sdl2 sdl2-image stb`  
     in the terminal with which you installed PSPSDK.
-2. Use one of the build_*.sh scripts in a Linux/WSL terminal with which you installed PSPSDK:
+2. Install the Python programming language. It is required for the resource archive packing scripts.
+3. Use one of the build_\*.sh scripts in a Linux/WSL terminal with which you installed PSPSDK:
     - **build_debug.sh** - Creates a debug build of the game.
     - **build_release.sh** - Creates a release build of the game.
     - **build_release_signed.sh** - Creates a signed release build of the game. This build works on PSPs without CFW, but it's usually bigger than the regular release build.
-    - **build_clean.sh** - Cleans up the compiled files, forcing the compiler to recompile the entire game the next time you use a build script. Does not actually build the game.
-3. The compiled build should be present in `build/kleleatoms` directory. To play it on a PSP, copy the entire `kleleatoms` directory to the PSP/GAME folder.  
+    - **build_clean.sh** - Cleans up the compiled files and everything in `build/kleleatoms` directory, forcing the compiler to recompile the entire game the next time you use a build script. Does not actually build the game.
+4. The compiled build should be present in `build/kleleatoms` directory. To play it on a PSP, copy the entire `kleleatoms` directory to the PSP/GAME folder.  
 
 ## License
 This game is licensed under the MIT License, see [LICENSE](https://github.com/Nightwolf-47/KleleAtoms-PSP/blob/main/LICENSE) for details.  
   
 The font res/font/DejaVuSans.ttf is licensed under its own license present in the [res/font/LICENSE](https://github.com/Nightwolf-47/KleleAtoms-PSP/blob/main/res/font/LICENSE) file.
+
+The headers in src/utils/stb folder are [stb libraries](https://github.com/nothings/stb), licensed under either [Unlicense or MIT license](https://github.com/nothings/stb/blob/master/LICENSE).

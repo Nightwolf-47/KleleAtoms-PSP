@@ -1,14 +1,11 @@
 #include "gamelogic.h"
 #include "../../game/state.h"
 #include "../../game/game.h"
-#include "../../utils/pspwav.h"
+#include "../../utils/wavplayer.h"
 #include "gameai.h"
 #include <SDL2/SDL.h>
-
-#ifndef __XSTRING
-#define __STRING(s) #s
-#define __XSTRING(s) __STRING(s)
-#endif
+#include <limits.h>
+#include <stdlib.h>
 
 // Base atom speed in pixels per second
 const static float baseAtomSpeed = 42.27f;
@@ -121,7 +118,7 @@ static void explodeAtoms(int x, int y)
     curTile->playerNum = NOPLAYER;
     curTile->atomCount = 0;
     if(logicData->explosionCount < 1000)
-        pspwav_play(sfxExplode);
+        wavplayer_play(sfxExplode);
 }
 
 /// @brief Checks if any surrounding tiles are critical
@@ -180,7 +177,7 @@ static void doTileActions(float dt)
             if(curTile->explodeTime > 0)
             {
                 curTile->explodeTime -= dt;
-                if(curTile->explodeTime < 0)
+                if(curTile->explodeTime <= 0)
                     curTile->explodeTime = 0.0f;
                 else
                     logicData->animPlaying = true;
@@ -188,9 +185,11 @@ static void doTileActions(float dt)
             else if(curTile->playerNum >= 0)
             {
                 logicData->playerAtoms[curTile->playerNum] += curTile->atomCount;
-                for(int i=0; i<curTile->atomCount; i++) //Move animated atoms
+                //Move animated atoms
+                for(int i=0; i<curTile->atomCount; i++)
                 {
                     struct KAAtom* curAtom = &curTile->atoms[i];
+                    //If the atom isn't at its target position, move it
                     if((curAtom->curx != curAtom->endx) || (curAtom->cury != curAtom->endy))
                     {
                         logicData->animPlaying = true;
@@ -328,7 +327,7 @@ void gamelogic_tick(float dt)
 {
     if(logicData->explosionCount >= ATOMSTACKSIZE)
     {
-        game_printMsg("More than "__XSTRING(ATOMSTACKSIZE)" simultaneous explosions! Stopping...",4);
+        game_printMsg("More than "XSTR(ATOMSTACKSIZE)" simultaneous explosions! Stopping...",4);
         changeState(ST_MENUSTATE);
         return;
     }
@@ -407,7 +406,7 @@ void gamelogic_clickedTile(int x, int y, bool isAIMove)
         return;
     logicData->explosionCount = 0;
     logicData->playerStatus[logicData->curPlayer] = PST_PLAYING;
-    pspwav_play(sfxPut);
+    wavplayer_play(sfxPut);
     prepareNewAtoms(x,y);
 }
 
