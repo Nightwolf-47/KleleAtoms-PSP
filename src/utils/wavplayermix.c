@@ -39,6 +39,7 @@ static WavInfo* loadWavData(void* wavData, size_t wavSize, const char* fileName)
             if(!audioData)
             {
                 SDL_LogError(SDL_LOG_CATEGORY_ERROR,"wavplayer: Failure to allocate wav data memory");
+                SDL_RWclose(wav);
                 return NULL;
             }
             audioData->audio = Mix_LoadWAV_RW(wav,1);
