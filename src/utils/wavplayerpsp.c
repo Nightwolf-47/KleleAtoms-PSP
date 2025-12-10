@@ -50,7 +50,7 @@ static WavInfo* loadWavData(void* wavData, size_t wavSize, const char* fileName)
                 return NULL;
             }
             Uint32 alignedSampleCount = PSP_AUDIO_SAMPLE_ALIGN(audioData->pcmSize/(2*audioData->spec.channels));
-            Uint32 alignedPcmSize = audioData->pcmSize * (2*audioData->spec.channels);
+            Uint32 alignedPcmSize = alignedSampleCount * (2*audioData->spec.channels);
             audioData->pcmData = calloc(1,alignedPcmSize);
             if(!audioData->pcmData)
             {
