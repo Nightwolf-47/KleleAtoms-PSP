@@ -1,10 +1,11 @@
 # KleleAtoms-PSP
 PSP port of [KłełeAtoms](https://github.com/Nightwolf-47/KleleAtoms), a game where you have to take atoms from other players by blowing up yours.  
   
-<img width="400" height="225" alt="kapsp-menu" src="https://github.com/user-attachments/assets/20a663bb-af25-4caf-91b3-32c5f2e2b4db" />
+<img width="400" height="225" alt="kapsp-menu" src="https://github.com/user-attachments/assets/2e360fb2-5201-4343-8c34-debdd49a9abc" />
 <img width="400" height="225" alt="kapsp-game" src="https://github.com/user-attachments/assets/152ed69d-4557-4146-a1e9-30ce85e04a28" />
 <img width="400" height="225" alt="kapsp-pause" src="https://github.com/user-attachments/assets/262b434a-a50e-4df8-94d0-2d9ca522d5ef" />
-<img width="400" height="225" alt="kapsp-menu2" src="https://github.com/user-attachments/assets/db45a83c-1793-4491-bc5a-c72976cf58bb" />
+<img width="400" height="225" alt="kamd-menu2" src="https://github.com/user-attachments/assets/c781a781-428a-4843-a444-127a354cdc71" />
+
 
 
 ## How to play
