@@ -5,7 +5,7 @@ typedef struct KTimer KTimer;
 
 /// @brief Create a new timer that counts time from the point of creation
 /// @return Timer struct to use with other ktimer_* functions
-KTimer* ktimer_create();
+KTimer* ktimer_create(void);
 
 /// @brief Get time in milliseconds
 /// @param timer Timer to get the time from

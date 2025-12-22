@@ -7,7 +7,7 @@ struct KTimer {
     Sint64 startTime;
 };
 
-KTimer* ktimer_create()
+KTimer* ktimer_create(void)
 {
     KTimer* newTimer = (KTimer*)malloc(sizeof(KTimer));
     newTimer->startTime = SDL_GetTicks64();
